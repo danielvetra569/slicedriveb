@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SliceDrive - Platform Streaming & Pemutar Video</title>
+    <title>VidHub - Platform Pemutar Video & Streaming</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -32,23 +32,34 @@
     </style>
 </head>
 <body class="bg-dark-bg text-dark-text min-h-screen font-sans antialiased selection:bg-cyan-500 selection:text-white">
+    
+    <!-- Top Adsterra Banner -->
+    <div class="w-full bg-dark-surface border-b border-dark-border py-2 text-center overflow-hidden">
+        <div class="text-[9px] uppercase tracking-widest text-dark-muted mb-1">Advertisement / Sponsor</div>
+        <div class="flex justify-center items-center">
+            <script data-cfasync="false" src="https://bancadeltempoidea.org/14/0b6c94865d260b69f091b59cb66be542"></script>
+        </div>
+    </div>
+
     <!-- Navbar -->
     <header class="sticky top-0 z-50 backdrop-blur-md bg-dark-bg/90 border-b border-dark-border">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-            <div class="flex items-center space-x-3 cursor-pointer shrink-0" onclick="resetFilter()">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="resetFilter()">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
                     <svg class="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
-                <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">SliceDrive</span>
+                <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">VidHub</span>
             </div>
 
+            <!-- Search Bar -->
             <div class="flex-1 max-w-xl hidden sm:block">
                 <div class="relative">
-                    <input type="text" id="search-input" oninput="handleSearch()" placeholder="Cari video, film pendek, atau tutorial..." class="w-full bg-dark-surface border border-dark-border rounded-full pl-5 pr-11 py-2 text-sm focus:outline-none focus:border-cyan-500 transition-colors">
+                    <input type="text" id="search-input" oninput="handleSearch()" placeholder="Cari video atau movie..." class="w-full bg-dark-surface border border-dark-border rounded-full pl-5 pr-11 py-2 text-sm focus:outline-none focus:border-cyan-500 transition-colors">
                     <svg class="w-4 h-4 absolute right-4 top-2.5 text-dark-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 </div>
             </div>
 
+            <!-- Upload Button -->
             <div class="flex items-center space-x-3 shrink-0">
                 <button onclick="openUploadModal()" class="inline-flex items-center space-x-2 bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-full text-sm font-medium transition-all shadow-lg shadow-cyan-600/20">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -63,27 +74,21 @@
 
     <!-- Main Layout -->
     <main class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Category Pills -->
         <div id="category-bar" class="flex items-center gap-2 overflow-x-auto pb-4 mb-4">
             <button onclick="filterCategory('Semua')" class="cat-btn active px-4 py-1.5 rounded-full text-xs font-semibold bg-cyan-600 text-white whitespace-nowrap transition-all">Semua</button>
-            <button onclick="filterCategory('Teknologi')" class="cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-dark-surface border border-dark-border text-dark-muted hover:text-white whitespace-nowrap transition-all">Teknologi</button>
+            <button onclick="filterCategory('Movie')" class="cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-dark-surface border border-dark-border text-dark-muted hover:text-white whitespace-nowrap transition-all">Movie / Film</button>
             <button onclick="filterCategory('Gaming')" class="cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-dark-surface border border-dark-border text-dark-muted hover:text-white whitespace-nowrap transition-all">Gaming</button>
             <button onclick="filterCategory('Hiburan')" class="cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-dark-surface border border-dark-border text-dark-muted hover:text-white whitespace-nowrap transition-all">Hiburan</button>
-            <button onclick="filterCategory('Tutorial')" class="cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-dark-surface border border-dark-border text-dark-muted hover:text-white whitespace-nowrap transition-all">Tutorial</button>
         </div>
 
+        <!-- Watch Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Column -->
+            <!-- Left Column: Video Player & Details -->
             <div class="lg:col-span-2 space-y-4">
                 <div class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden border border-dark-border shadow-2xl" id="player-wrapper"></div>
 
-                <!-- Adsterra Banner Slot -->
-                <div class="bg-dark-surface border border-dark-border rounded-2xl p-4 text-center my-4 overflow-hidden">
-                    <div class="text-[10px] uppercase tracking-wider text-dark-muted mb-2">Iklan / Sponsor</div>
-                    <div class="w-full bg-dark-bg border border-dark-border rounded-xl flex items-center justify-center p-2">
-                        <script data-cfasync="false" src="https://bancadeltempoidea.org/14/0b6c94865d260b69f091b59cb66be542"></script>
-                    </div>
-                </div>
-
+                <!-- Video Metadata -->
                 <div class="bg-dark-surface border border-dark-border rounded-2xl p-5">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                         <span id="player-category" class="bg-cyan-500/10 text-cyan-400 text-xs font-semibold px-3 py-1 rounded-full border border-cyan-500/20">Kategori</span>
@@ -93,10 +98,10 @@
 
                     <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-dark-border">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center font-bold text-white text-sm">SD</div>
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center font-bold text-white text-sm">VH</div>
                             <div>
                                 <div class="font-semibold text-sm flex items-center gap-1">
-                                    <span>SliceDrive Official</span>
+                                    <span>VidHub Official</span>
                                     <svg class="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                                 </div>
                                 <div class="text-xs text-dark-muted" id="player-views">1.2K tayangan</div>
@@ -125,7 +130,189 @@
                     <h3 class="text-base font-bold mb-4">Komentar (<span id="comment-total">0</span>)</h3>
                     <form onsubmit="addComment(event)" class="flex flex-col sm:flex-row gap-3 mb-6">
                         <input type="text" id="comment-user" placeholder="Nama Anda" required class="sm:w-1/3 bg-dark-bg border border-dark-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-cyan-500">
-                        <input type="text" id="comment-msg" placeholder="Tulis komentar publik..." required class="flex-1 bg-dark-bg border border-dark-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                        <input type="text" id="comment-msg" placeholder="Tulis komentar..." required class="flex-1 bg-dark-bg border border-dark-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                        <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors shrink-0">Kirim</button>
+                    </form>
+                    <div id="comments-container" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- Right Column: Playlist -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-base font-bold">Daftar Putar Video</h2>
+                    <span class="text-xs text-dark-muted" id="playlist-count">0 video</span>
+                </div>
+                <div id="playlist-container" class="space-y-3"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Adsterra Banner Slot -->
+        <div class="bg-dark-surface border border-dark-border rounded-2xl p-4 text-center my-6 overflow-hidden">
+            <div class="text-[10px] uppercase tracking-wider text-dark-muted mb-2">Iklan / Sponsor</div>
+            <div class="flex justify-center items-center py-2">
+                <script data-cfasync="false" src="https://bancadeltempoidea.org/14/0b6c94865d260b69f091b59cb66be542"></script>
+            </div>
+        </div>
+    </main>
+
+    <!-- Upload Modal -->
+    <div id="upload-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-dark-surface border border-dark-border w-full max-w-lg rounded-2xl p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-lg font-bold">Tambahkan Video Baru</h2>
+                <button type="button" onclick="closeUploadModal()" class="text-dark-muted hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form onsubmit="saveVideo(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-dark-muted mb-1">Judul Video / Movie</label>
+                    <input type="text" id="vid-title" required placeholder="Contoh: Sintel - Short Movie" class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-dark-muted mb-1">Kategori</label>
+                    <select id="vid-category" class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                        <option value="Movie">Movie / Film</option>
+                        <option value="Gaming">Gaming</option>
+                        <option value="Hiburan">Hiburan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-dark-muted mb-1">URL Video (MP4 atau Link YouTube)</label>
+                    <input type="url" id="vid-url" required placeholder="https://www.youtube.com/watch?v=... atau file.mp4" class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-dark-muted mb-1">URL Gambar Thumbnail (Opsional)</label>
+                    <input type="url" id="vid-thumb" placeholder="https://images.unsplash.com/..." class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-dark-muted mb-1">Deskripsi</label>
+                    <textarea id="vid-desc" rows="3" required placeholder="Sinopsis atau deskripsi video..." class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-cyan-500"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeUploadModal()" class="bg-dark-card hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-sm font-medium">Batal</button>
+                    <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2 rounded-xl text-sm font-medium">Publikasikan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-cyan-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        Tautan disalin!
+    </div>
+
+    <script>
+        let videos = [
+            {
+                id: 1,
+                title: "Big Buck Bunny - Animasi Resolusi Tinggi",
+                category: "Movie",
+                date: "18 November 2026",
+                views: "14.5K tayangan",
+                duration: "09:56",
+                url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                thumbnail: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=800&q=80",
+                desc: "Contoh pemutaran film pendek animasi format MP4 HTML5 dengan kontrol penuh pemutar video.",
+                likes: 342,
+                liked: false,
+                comments: [{ user: "Budi Santoso", msg: "Videonya jernih banget dan lancar diputar!" }]
+            },
+            {
+                id: 2,
+                title: "Sintel - Film Pendek Fantasi Open Movie",
+                category: "Movie",
+                date: "17 November 2026",
+                views: "8.2K tayangan",
+                duration: "14:48",
+                url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+                thumbnail: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
+                desc: "Film pendek animasi epik kisah perjalanan seorang gadis mencari naga peliharaannya.",
+                likes: 215,
+                liked: false,
+                comments: []
+            },
+            {
+                id: 3,
+                title: "Tears of Steel - Sci-Fi Short Film 4K",
+                category: "Movie",
+                date: "15 November 2026",
+                views: "5.9K tayangan",
+                duration: "12:14",
+                url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+                thumbnail: "https://images.unsplash.com/photo-1535223289827-42f1e9919769?auto=format&fit=crop&w=800&q=80",
+                desc: "Film fiksi ilmiah sinematik dengan efek visual CGI kelas dunia.",
+                likes: 189,
+                liked: false,
+                comments: []
+            }
+        ];
+
+        if (localStorage.getItem('vidhub_videos')) {
+            videos = JSON.parse(localStorage.getItem('vidhub_videos'));
+        }
+
+        let currentVideoId = videos[0].id;
+        let activeCategory = 'Semua';
+
+        function getEmbedUrl(url) {
+            const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+            if (ytMatch && ytMatch[1]) {
+                return { type: 'youtube', src: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1` };
+            }
+            return { type: 'mp4', src: url };
+        }
+
+        function playVideo(id) {
+            currentVideoId = id;
+            const vid = videos.find(v => v.id === id);
+            if (!vid) return;
+
+            const wrapper = document.getElementById('player-wrapper');
+            const media = getEmbedUrl(vid.url);
+
+            if (media.type === 'youtube') {
+                wrapper.innerHTML = `<iframe class="w-full h-full" src="${media.src}" title="${vid.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            } else {
+                wrapper.innerHTML = `
+                    <video controls autoplay playsinline poster="${vid.thumbnail || ''}" class="w-full h-full object-contain bg-black">
+                        <source src="${media.src}" type="video/mp4">
+                        Browser Anda tidak mendukung pemutar video HTML5.
+                    </video>
+                `;
+            }
+
+            document.getElementById('player-category').innerText = vid.category;
+            document.getElementById('player-date').innerText = vid.date;
+            document.getElementById('player-title').innerText = vid.title;
+            document.getElementById('player-views').innerText = vid.views;
+            document.getElementById('player-desc').innerText = vid.desc;
+            document.getElementById('like-count').innerText = vid.likes;
+
+            const likeBtn = document.getElementById('like-btn');
+            if (vid.liked) {
+                likeBtn.classList.add('text-cyan-400', 'border-cyan-500/50');
+            } else {
+                likeBtn.classList.remove('text-cyan-400', 'border-cyan-500/50');
+            }
+
+            renderComments(vid.comments || []);
+            renderPlaylist();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderPlaylist(list = videos) {
+            const container = document.getElementById('playlist-container');
+            document.getElementById('playlist-count').innerText = `${list.length} video`;
+
+            if (list.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-xs text-dark-muted bg-dark-surface rounded-2xl border border-dark-border">Tidak ada video ditemukan.</div>`;
+                return;
+            }
+
+            container.innerHTML = list.map(vid => {
+   publik..." required class="flex-1 bg-dark-bg border border-dark-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-cyan-500">
                         <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors shrink-0">Kirim</button>
                     </form>
                     <div id="comments-container" class="space-y-3"></div>
