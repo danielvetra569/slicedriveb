@@ -25,28 +25,16 @@
         }
     </script>
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0b0f19;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #27334d;
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #06b6d4;
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0f19; }
+        ::-webkit-scrollbar-thumb { background: #27334d; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
     </style>
 </head>
 <body class="bg-dark-bg text-dark-text min-h-screen font-sans antialiased selection:bg-cyan-500 selection:text-white">
     <!-- Navbar -->
     <header class="sticky top-0 z-50 backdrop-blur-md bg-dark-bg/90 border-b border-dark-border">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-            <!-- Logo -->
             <div class="flex items-center space-x-3 cursor-pointer shrink-0" onclick="resetFilter()">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
                     <svg class="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -54,7 +42,6 @@
                 <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">SliceDrive</span>
             </div>
 
-            <!-- Search Bar -->
             <div class="flex-1 max-w-xl hidden sm:block">
                 <div class="relative">
                     <input type="text" id="search-input" oninput="handleSearch()" placeholder="Cari video, film pendek, atau tutorial..." class="w-full bg-dark-surface border border-dark-border rounded-full pl-5 pr-11 py-2 text-sm focus:outline-none focus:border-cyan-500 transition-colors">
@@ -62,7 +49,6 @@
                 </div>
             </div>
 
-            <!-- Upload Button -->
             <div class="flex items-center space-x-3 shrink-0">
                 <button onclick="openUploadModal()" class="inline-flex items-center space-x-2 bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-full text-sm font-medium transition-all shadow-lg shadow-cyan-600/20">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -70,7 +56,6 @@
                 </button>
             </div>
         </div>
-        <!-- Mobile Search -->
         <div class="sm:hidden px-4 pb-3">
             <input type="text" id="mobile-search-input" oninput="handleMobileSearch()" placeholder="Cari video..." class="w-full bg-dark-surface border border-dark-border rounded-full px-4 py-2 text-sm focus:outline-none focus:border-cyan-500">
         </div>
@@ -78,7 +63,6 @@
 
     <!-- Main Layout -->
     <main class="max-w-7xl mx-auto px-4 py-6">
-        <!-- Category Pills -->
         <div id="category-bar" class="flex items-center gap-2 overflow-x-auto pb-4 mb-4">
             <button onclick="filterCategory('Semua')" class="cat-btn active px-4 py-1.5 rounded-full text-xs font-semibold bg-cyan-600 text-white whitespace-nowrap transition-all">Semua</button>
             <button onclick="filterCategory('Teknologi')" class="cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-dark-surface border border-dark-border text-dark-muted hover:text-white whitespace-nowrap transition-all">Teknologi</button>
@@ -87,16 +71,19 @@
             <button onclick="filterCategory('Tutorial')" class="cat-btn px-4 py-1.5 rounded-full text-xs font-medium bg-dark-surface border border-dark-border text-dark-muted hover:text-white whitespace-nowrap transition-all">Tutorial</button>
         </div>
 
-        <!-- Theater / Watch Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Column: Video Player & Details (2/3 width on desktop) -->
+            <!-- Left Column -->
             <div class="lg:col-span-2 space-y-4">
-                <!-- Video Frame Container -->
-                <div class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden border border-dark-border shadow-2xl" id="player-wrapper">
-                    <!-- Player injected via JS -->
+                <div class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden border border-dark-border shadow-2xl" id="player-wrapper"></div>
+
+                <!-- Adsterra Banner Slot -->
+                <div class="bg-dark-surface border border-dark-border rounded-2xl p-4 text-center my-4 overflow-hidden">
+                    <div class="text-[10px] uppercase tracking-wider text-dark-muted mb-2">Iklan / Sponsor</div>
+                    <div class="w-full bg-dark-bg border border-dark-border rounded-xl flex items-center justify-center p-2">
+                        <script data-cfasync="false" src="https://bancadeltempoidea.org/14/0b6c94865d260b69f091b59cb66be542"></script>
+                    </div>
                 </div>
 
-                <!-- Video Metadata & Actions -->
                 <div class="bg-dark-surface border border-dark-border rounded-2xl p-5">
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                         <span id="player-category" class="bg-cyan-500/10 text-cyan-400 text-xs font-semibold px-3 py-1 rounded-full border border-cyan-500/20">Kategori</span>
@@ -104,7 +91,6 @@
                     </div>
                     <h1 id="player-title" class="text-xl sm:text-2xl font-bold tracking-tight mb-4">Judul Video</h1>
 
-                    <!-- Channel & Action Buttons -->
                     <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-dark-border">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center font-bold text-white text-sm">SD</div>
@@ -129,20 +115,10 @@
                         </div>
                     </div>
 
-                    <!-- Description -->
                     <div class="pt-4">
                         <p id="player-desc" class="text-sm text-slate-300 leading-relaxed whitespace-pre-line">Deskripsi video...</p>
                     </div>
                 </div>
-
-                <!-- Kotak Slot Iklan Banner -->
-<div class="bg-dark-surface border border-dark-border rounded-2xl p-4 text-center my-4">
-    <div class="text-[10px] uppercase tracking-wider text-dark-muted mb-2">Iklan / Sponsor</div>
-    <!-- Masukkan script iklan dari jaringan iklan (Adsterra, Monetag, Google AdSense, dll) di sini -->
-    <div class="w-full h-24 bg-dark-bg border border-dashed border-dark-border rounded-xl flex items-center justify-center text-xs text-dark-muted">
-        <script data-cfasync="false" src="https://bancadeltempoidea.org/14/0b6c94865d260b69f091b59cb66be542"></script>
-    </div>
-</div>
 
                 <!-- Comments Section -->
                 <div class="bg-dark-surface border border-dark-border rounded-2xl p-5">
@@ -152,23 +128,17 @@
                         <input type="text" id="comment-msg" placeholder="Tulis komentar publik..." required class="flex-1 bg-dark-bg border border-dark-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-cyan-500">
                         <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors shrink-0">Kirim</button>
                     </form>
-                    <div id="comments-container" class="space-y-3">
-                        <!-- Comments injected here -->
-                    </div>
+                    <div id="comments-container" class="space-y-3"></div>
                 </div>
             </div>
 
-            
-
-            <!-- Right Column: Up Next / Playlist (1/3 width on desktop) -->
+            <!-- Right Column: Playlist -->
             <div class="space-y-4">
                 <div class="flex items-center justify-between">
                     <h2 class="text-base font-bold">Daftar Putar Berikutnya</h2>
                     <span class="text-xs text-dark-muted" id="playlist-count">0 video</span>
                 </div>
-                <div id="playlist-container" class="space-y-3">
-                    <!-- Video Cards injected here -->
-                </div>
+                <div id="playlist-container" class="space-y-3"></div>
             </div>
         </div>
     </main>
@@ -178,7 +148,7 @@
         <div class="bg-dark-surface border border-dark-border w-full max-w-lg rounded-2xl p-6 shadow-2xl">
             <div class="flex items-center justify-between mb-5">
                 <h2 class="text-lg font-bold">Tambahkan Video Baru</h2>
-                <button onclick="closeUploadModal()" class="text-dark-muted hover:text-white">
+                <button type="button" onclick="closeUploadModal()" class="text-dark-muted hover:text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
@@ -199,7 +169,6 @@
                 <div>
                     <label class="block text-xs font-medium text-dark-muted mb-1">Tautan Video (URL MP4 atau Link YouTube)</label>
                     <input type="url" id="vid-url" required placeholder="https://www.youtube.com/watch?v=... atau https://.../video.mp4" class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-cyan-500">
-                    <p class="text-[11px] text-dark-muted mt-1">Mendukung tautan langsung file .mp4 atau link video YouTube.</p>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-dark-muted mb-1">URL Gambar Thumbnail (Opsional)</label>
@@ -233,12 +202,10 @@
                 duration: "09:56",
                 url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
                 thumbnail: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=800&q=80",
-                desc: "Contoh pemutaran video langsung menggunakan format MP4 HTML5 dengan kontrol penuh (Play, Pause, Fullscreen, Volume, dan Picture-in-Picture).",
+                desc: "Contoh pemutaran video langsung menggunakan format MP4 HTML5 dengan kontrol penuh.",
                 likes: 342,
                 liked: false,
-                comments: [
-                    { user: "Rizky Pratama", msg: "Kualitas pemutar videonya sangat mulus dan responsif!" }
-                ]
+                comments: [{ user: "Rizky Pratama", msg: "Kualitas pemutar videonya sangat mulus dan responsif!" }]
             },
             {
                 id: 2,
@@ -249,22 +216,8 @@
                 duration: "14:48",
                 url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
                 thumbnail: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
-                desc: "Film pendek animasi epik yang menceritakan perjalanan seorang gadis mencari naga peliharaannya. Cocok untuk menguji streaming video di SliceDrive.",
+                desc: "Film pendek animasi epik yang menceritakan perjalanan seorang gadis mencari naga peliharaannya.",
                 likes: 215,
-                liked: false,
-                comments: []
-            },
-            {
-                id: 3,
-                title: "Tears of Steel - Sci-Fi Short Film 4K",
-                category: "Teknologi",
-                date: "15 November 2026",
-                views: "5.9K tayangan",
-                duration: "12:14",
-                url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
-                thumbnail: "https://images.unsplash.com/photo-1535223289827-42f1e9919769?auto=format&fit=crop&w=800&q=80",
-                desc: "Film fiksi ilmiah dengan efek visual CGI memukau yang diproduksi oleh Blender Foundation.",
-                likes: 189,
                 liked: false,
                 comments: []
             }
@@ -278,7 +231,6 @@
         let activeCategory = 'Semua';
 
         function getEmbedUrl(url) {
-            // Deteksi link YouTube
             const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
             if (ytMatch && ytMatch[1]) {
                 return { type: 'youtube', src: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1` };
@@ -325,186 +277,18 @@
         }
 
         function renderPlaylist(list = videos) {
-            const container =     </form>
-        </div>
-    </div>
+            const container = document.getElementById('playlist-container');
+            document.getElementById('playlist-count').innerText = `${list.length} video`;
 
-    <!-- JavaScript Engine -->
-    <script>
-        let articles = [
-            {
-                id: 1,
-                title: "Mengapa Arsitektur Dark Mode Menjadi Standar Baru Desain Web",
-                category: "Teknologi",
-                date: "18 November 2026",
-                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80",
-                excerpt: "Tampilan mode gelap bukan hanya sekadar tren estetika, melainkan solusi efisiensi energi layar OLED dan kenyamanan penglihatan di ruang redup.",
-                body: "Mode gelap (dark mode) telah bertransformasi dari sekadar fitur opsional menjadi standar utama dalam desain antarmuka perangkat lunak modern. Selain menghemat daya pada perangkat berlayar OLED, kontras tinggi antara latar belakang gelap dan teks terang terbukti mengurangi kelelahan mata secara signifikan bagi pengguna yang menghabiskan waktu lama di depan layar.\n\nDalam pengembangan web modern, penerapan variabel warna berbasis token utilitas seperti Tailwind CSS memudahkan transisi ini tanpa mengorbankan performa aksesibilitas baca.",
-                comments: [
-                    { name: "Budi Santoso", text: "Artikel yang sangat informatif! Memang mata lebih tidak cepat lelah pakai mode gelap." }
-                ]
-            },
-            {
-                id: 2,
-                title: "Tips Optimalisasi Kinerja Website Statis untuk Kecepatan Maksimal",
-                category: "Programming",
-                date: "17 November 2026",
-                image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80",
-                excerpt: "Pelajari cara menyederhanakan aset kode dan memanfaatkan CDN untuk mendongkrak performa web hingga 99 poin di Lighthouse.",
-                body: "Kecepatan muat halaman web adalah faktor penentu utama retensi pengunjung dan peringkat mesin pencari (SEO). Dengan menggunakan pendekatan situs web statis (jamming/static HTML), Anda memangkas waktu tunggu server karena file langsung disajikan tanpa kueri database yang rumit.\n\nGunakan kompresi gambar modern seperti WebP, minimalkan file JavaScript eksternal, dan manfaatkan CDN global seperti Cloudflare atau GitHub Pages untuk hasil performa yang optimal.",
-                comments: []
-            }
-        ];
-
-        let currentCategory = 'All';
-        let currentArticleId = null;
-
-        // Load saved articles from LocalStorage if available
-        if (localStorage.getItem('nalarkita_articles')) {
-            articles = JSON.parse(localStorage.getItem('nalarkita_articles'));
-        }
-
-        function renderArticles(list = articles) {
-            const grid = document.getElementById('article-grid');
             if (list.length === 0) {
-                grid.innerHTML = `<div class="col-span-2 text-center py-12 text-dark-muted">Tidak ada artikel ditemukan.</div>`;
+                container.innerHTML = `<div class="text-center py-8 text-xs text-dark-muted bg-dark-surface rounded-2xl border border-dark-border">Tidak ada video ditemukan.</div>`;
                 return;
             }
 
-            grid.innerHTML = list.map(art => `
-                <div onclick="openArticle(${art.id})" class="group bg-dark-card border border-dark-border rounded-2xl overflow-hidden hover:border-cyan-500/50 transition-all cursor-pointer flex flex-col shadow-lg">
-                    <div class="h-48 overflow-hidden relative">
-                        <img src="${art.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80'}" alt="${art.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        <span class="absolute top-3 left-3 bg-dark-bg/80 backdrop-blur-md text-cyan-400 text-xs font-semibold px-3 py-1 rounded-full border border-dark-border">${art.category}</span>
-                    </div>
-                    <div class="p-6 flex flex-col flex-1">
-                        <span class="text-xs text-dark-muted mb-2">${art.date}</span>
-                        <h2 class="text-lg font-bold mb-2 group-hover:text-cyan-400 transition-colors">${art.title}</h2>
-                        <p class="text-dark-muted text-sm line-clamp-2">${art.excerpt || art.body}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function filterCategory(cat) {
-            currentCategory = cat;
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                if(btn.innerText.includes(cat) || (cat === 'All' && btn.innerText === 'Semua')) {
-                    btn.className = "category-btn active px-4 py-2 rounded-xl text-xs font-medium bg-cyan-600 text-white whitespace-nowrap transition-all";
-                } else {
-                    btn.className = "category-btn px-4 py-2 rounded-xl text-xs font-medium bg-dark-card border border-dark-border text-dark-muted hover:text-white whitespace-nowrap transition-all";
-                }
-            });
-
-            if (cat === 'All') {
-                renderArticles(articles);
-            } else {
-                const filtered = articles.filter(a => a.category === cat);
-                renderArticles(filtered);
-            }
-        }
-
-        function handleSearch() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const filtered = articles.filter(a => a.title.toLowerCase().includes(query) || a.body.toLowerCase().includes(query));
-            renderArticles(filtered);
-        }
-
-        function openArticle(id) {
-            currentArticleId = id;
-            const art = articles.find(a => a.id === id);
-            if (!art) return;
-
-            document.getElementById('home-view').classList.add('hidden');
-            document.getElementById('detail-view').classList.remove('hidden');
-
-            const contentEl = document.getElementById('article-content');
-            contentEl.innerHTML = `
-                <span class="inline-block bg-cyan-500/10 text-cyan-400 text-xs font-semibold px-3 py-1 rounded-full border border-cyan-500/20 mb-4">${art.category}</span>
-                <h1 class="text-2xl sm:text-3xl font-extrabold mb-3 tracking-tight">${art.title}</h1>
-                <div class="text-xs text-dark-muted mb-6 pb-6 border-b border-dark-border">Dipublikasikan pada ${art.date}</div>
-                ${art.image ? `<div class="mb-6 rounded-xl overflow-hidden h-64 sm:h-80"><img src="${art.image}" class="w-full h-full object-cover"></div>` : ''}
-                <div class="space-y-4 text-slate-300 leading-relaxed text-sm sm:text-base whitespace-pre-line">${art.body}</div>
-            `;
-
-            renderComments(art.comments || []);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function renderComments(comments) {
-            const list = document.getElementById('comments-list');
-            if (comments.length === 0) {
-                list.innerHTML = `<p class="text-xs text-dark-muted italic">Belum ada komentar. Jadilah yang pertama memberikan tanggapan!</p>`;
-                return;
-            }
-            list.innerHTML = comments.map(c => `
-                <div class="bg-dark-bg p-4 rounded-xl border border-dark-border">
-                    <div class="font-semibold text-sm text-white mb-1">${c.name}</div>
-                    <p class="text-xs sm:text-sm text-dark-muted">${c.text}</p>
-                </div>
-            `).join('');
-        }
-
-        function addComment(e) {
-            e.preventDefault();
-            const name = document.getElementById('comment-name').value;
-            const text = document.getElementById('comment-text').value;
-
-            const art = articles.find(a => a.id === currentArticleId);
-            if (art) {
-                if (!art.comments) art.comments = [];
-                art.comments.push({ name, text });
-                localStorage.setItem('nalarkita_articles', JSON.stringify(articles));
-                renderComments(art.comments);
-                e.target.reset();
-            }
-        }
-
-        function goHome() {
-            document.getElementById('detail-view').classList.add('hidden');
-            document.getElementById('home-view').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function openWriteModal() {
-            document.getElementById('write-modal').classList.remove('hidden');
-        }
-
-        function closeWriteModal() {
-            document.getElementById('write-modal').classList.add('hidden');
-        }
-
-        function saveArticle(e) {
-            e.preventDefault();
-            const title = document.getElementById('new-title').value;
-            const category = document.getElementById('new-category').value;
-            const image = document.getElementById('new-image').value;
-            const body = document.getElementById('new-body').value;
-
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const date = new Date().toLocaleDateString('id-ID', options);
-
-            const newArt = {
-                id: Date.now(),
-                title,
-                category,
-                date,
-                image,
-                excerpt: body.substring(0, 120) + '...',
-                body,
-                comments: []
-            };
-
-            articles.unshift(newArt);
-            localStorage.setItem('nalarkita_articles', JSON.stringify(articles));
-            closeWriteModal();
-            e.target.reset();
-            filterCategory('All');
-            goHome();
-        }
-
-        // Inisialisasi awal
-        renderArticles();
-    </script>
-</body>
-</html>
+            container.innerHTML = list.map(vid => {
+                const isPlaying = vid.id === currentVideoId;
+                return `
+                    <div onclick="playVideo(${vid.id})" class="group flex gap-3 p-2.5 rounded-xl border transition-all cursor-pointer ${isPlaying ? 'bg-dark-card border-cyan-500/50' : 'bg-dark-surface border-dark-border hover:border-slate-600'}">
+                        <div class="relative w-36 aspect-video rounded-lg overflow-hidden bg-black shrink-0">
+                            <img src="${vid.thumbnail || 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=400&q=80'}" alt="${vid.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            <span class="absolute bottom-1 right-1 bg-bla
