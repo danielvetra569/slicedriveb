@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NalarKita - Blog Modern & Minimalis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            text: '#f8fafc',
+                            muted: '#94a3b8',
+                            border: '#334155'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark-bg text-dark-text min-h-screen font-sans antialiased selection:bg-cyan-500 selection:text-white">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-dark-bg/80 border-b border-dark-border">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="goHome()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-cyan-500/20">N</div>
+                <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-dark-muted bg-clip-text text-transparent">NalarKita</span>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button onclick="openWriteModal()" class="hidden sm:inline-flex items-center space-x-2 bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-lg shadow-cyan-600/2anchen">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>Tulis Artikel</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto px-4 py-8">
+        <!-- Hero Section / Search & Filter -->
+        <div id="home-view">
+            <div class="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">Eksplorasi Ide & Teknologi</h1>
+                    <p class="text-dark-muted text-sm sm:text-base">Kumpulan artikel pilihan seputar teknologi, pemrograman, dan wawasan digital.</p>
+                </div>
+                <button onclick="openWriteModal()" class="sm:hidden w-full flex items-center justify-center space-x-2 bg-cyan-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium">
+                    <span>Tulis Artikel Baru</span>
+                </button>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 mb-8">
+                <div class="relative flex-1">
+                    <svg class="w-5 h-5 absolute left-3.5 top-3 text-dark-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <input type="text" id="search-input" oninput="handleSearch()" placeholder="Cari judul artikel atau kata kunci..." class="w-full bg-dark-card border border-dark-border rounded-xl pl-11 pr-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500 transition-colors">
+                </div>
+                <div id="category-filters" class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
+                    <button onclick="filterCategory('All')" class="category-btn active px-4 py-2 rounded-xl text-xs font-medium bg-cyan-600 text-white whitespace-nowrap transition-all">Semua</button>
+                    <button onclick="filterCategory('Teknologi')" class="category-btn px-4 py-2 rounded-xl text-xs font-medium bg-dark-card border border-dark-border text-dark-muted hover:text-white whitespace-nowrap transition-all">Teknologi</button>
+                    <button onclick="filterCategory('Programming')" class="category-btn px-4 py-2 rounded-xl text-xs font-medium bg-dark-card border border-dark-border text-dark-muted hover:text-white whitespace-nowrap transition-all">Programming</button>
+                    <button onclick="filterCategory('Tips & Tutorial')" class="category-btn px-4 py-2 rounded-xl text-xs font-medium bg-dark-card border border-dark-border text-dark-muted hover:text-white whitespace-nowrap transition-all">Tips & Tutorial</button>
+                </div>
+            </div>
+
+            <!-- Article Grid -->
+            <div id="article-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Artikel dimuat via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Detail View (Hidden by default) -->
+        <div id="detail-view" class="hidden max-w-3xl mx-auto">
+            <button onclick="goHome()" class="inline-flex items-center space-x-2 text-dark-muted hover:text-white mb-6 text-sm transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                <span>Kembali ke Beranda</span>
+            </button>
+            <article id="article-content" class="bg-dark-card border border-dark-border rounded-2xl p-6 sm:p-10 shadow-xl">
+                <!-- Konten Artikel Detail -->
+            </article>
+
+            <!-- Comments Section -->
+            <div class="mt-8 bg-dark-card border border-dark-border rounded-2xl p-6 sm:p-8">
+                <h3 class="text-lg font-bold mb-6">Komentar</h3>
+                <div id="comments-list" class="space-y-4 mb-6">
+                    <!-- Komentar dimuat via JS -->
+                </div>
+                <form onsubmit="addComment(event)" class="space-y-4">
+                    <div>
+                        <input type="text" id="comment-name" placeholder="Nama Anda" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <textarea id="comment-text" rows="3" placeholder="Tulis komentar atau tanggapan..." required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500"></textarea>
+                    </div>
+                    <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors">Kirim Komentar</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Tulis Artikel -->
+    <div id="write-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-dark-card border border-dark-border w-full max-w-xl rounded-2xl p-6 sm:p-8 shadow-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold">Tulis Artikel Baru</h2>
+                <button onclick="closeWriteModal()" class="text-dark-muted hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form onsubmit="saveArticle(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-dark-muted mb-1.5">Judul Artikel</label>
+                    <input type="text" id="new-title" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500" placeholder="Misal: Membangun Aplikasi Skala Besar">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-dark-muted mb-1.5">Kategori</label>
+                    <select id="new-category" class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500">
+                        <option value="Teknologi">Teknologi</option>
+                        <option value="Programming">Programming</option>
+                        <option value="Tips & Tutorial">Tips & Tutorial</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-dark-muted mb-1.5">URL Gambar Sampul (Opsional)</label>
+                    <input type="url" id="new-image" class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500" placeholder="https://images.unsplash.com/...">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-dark-muted mb-1.5">Isi Artikel</label>
+                    <textarea id="new-body" rows="6" required class="w-full bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-500" placeholder="Tulis konten artikel lengkap di sini..."></textarea>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeWriteModal()" class="bg-dark-border hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors">Batal</button>
+                    <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors">Terbitkan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Engine -->
+    <script>
+        let articles = [
+            {
+                id: 1,
+                title: "Mengapa Arsitektur Dark Mode Menjadi Standar Baru Desain Web",
+                category: "Teknologi",
+                date: "18 November 2026",
+                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80",
+                excerpt: "Tampilan mode gelap bukan hanya sekadar tren estetika, melainkan solusi efisiensi energi layar OLED dan kenyamanan penglihatan di ruang redup.",
+                body: "Mode gelap (dark mode) telah bertransformasi dari sekadar fitur opsional menjadi standar utama dalam desain antarmuka perangkat lunak modern. Selain menghemat daya pada perangkat berlayar OLED, kontras tinggi antara latar belakang gelap dan teks terang terbukti mengurangi kelelahan mata secara signifikan bagi pengguna yang menghabiskan waktu lama di depan layar.\n\nDalam pengembangan web modern, penerapan variabel warna berbasis token utilitas seperti Tailwind CSS memudahkan transisi ini tanpa mengorbankan performa aksesibilitas baca.",
+                comments: [
+                    { name: "Budi Santoso", text: "Artikel yang sangat informatif! Memang mata lebih tidak cepat lelah pakai mode gelap." }
+                ]
+            },
+            {
+                id: 2,
+                title: "Tips Optimalisasi Kinerja Website Statis untuk Kecepatan Maksimal",
+                category: "Programming",
+                date: "17 November 2026",
+                image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80",
+                excerpt: "Pelajari cara menyederhanakan aset kode dan memanfaatkan CDN untuk mendongkrak performa web hingga 99 poin di Lighthouse.",
+                body: "Kecepatan muat halaman web adalah faktor penentu utama retensi pengunjung dan peringkat mesin pencari (SEO). Dengan menggunakan pendekatan situs web statis (jamming/static HTML), Anda memangkas waktu tunggu server karena file langsung disajikan tanpa kueri database yang rumit.\n\nGunakan kompresi gambar modern seperti WebP, minimalkan file JavaScript eksternal, dan manfaatkan CDN global seperti Cloudflare atau GitHub Pages untuk hasil performa yang optimal.",
+                comments: []
+            }
+        ];
+
+        let currentCategory = 'All';
+        let currentArticleId = null;
+
+        // Load saved articles from LocalStorage if available
+        if (localStorage.getItem('nalarkita_articles')) {
+            articles = JSON.parse(localStorage.getItem('nalarkita_articles'));
+        }
+
+        function renderArticles(list = articles) {
+            const grid = document.getElementById('article-grid');
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 text-center py-12 text-dark-muted">Tidak ada artikel ditemukan.</div>`;
+                return;
+            }
+
+            grid.innerHTML = list.map(art => `
+                <div onclick="openArticle(${art.id})" class="group bg-dark-card border border-dark-border rounded-2xl overflow-hidden hover:border-cyan-500/50 transition-all cursor-pointer flex flex-col shadow-lg">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="${art.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80'}" alt="${art.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 bg-dark-bg/80 backdrop-blur-md text-cyan-400 text-xs font-semibold px-3 py-1 rounded-full border border-dark-border">${art.category}</span>
+                    </div>
+                    <div class="p-6 flex flex-col flex-1">
+                        <span class="text-xs text-dark-muted mb-2">${art.date}</span>
+                        <h2 class="text-lg font-bold mb-2 group-hover:text-cyan-400 transition-colors">${art.title}</h2>
+                        <p class="text-dark-muted text-sm line-clamp-2">${art.excerpt || art.body}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if(btn.innerText.includes(cat) || (cat === 'All' && btn.innerText === 'Semua')) {
+                    btn.className = "category-btn active px-4 py-2 rounded-xl text-xs font-medium bg-cyan-600 text-white whitespace-nowrap transition-all";
+                } else {
+                    btn.className = "category-btn px-4 py-2 rounded-xl text-xs font-medium bg-dark-card border border-dark-border text-dark-muted hover:text-white whitespace-nowrap transition-all";
+                }
+            });
+
+            if (cat === 'All') {
+                renderArticles(articles);
+            } else {
+                const filtered = articles.filter(a => a.category === cat);
+                renderArticles(filtered);
+            }
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = articles.filter(a => a.title.toLowerCase().includes(query) || a.body.toLowerCase().includes(query));
+            renderArticles(filtered);
+        }
+
+        function openArticle(id) {
+            currentArticleId = id;
+            const art = articles.find(a => a.id === id);
+            if (!art) return;
+
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('detail-view').classList.remove('hidden');
+
+            const contentEl = document.getElementById('article-content');
+            contentEl.innerHTML = `
+                <span class="inline-block bg-cyan-500/10 text-cyan-400 text-xs font-semibold px-3 py-1 rounded-full border border-cyan-500/20 mb-4">${art.category}</span>
+                <h1 class="text-2xl sm:text-3xl font-extrabold mb-3 tracking-tight">${art.title}</h1>
+                <div class="text-xs text-dark-muted mb-6 pb-6 border-b border-dark-border">Dipublikasikan pada ${art.date}</div>
+                ${art.image ? `<div class="mb-6 rounded-xl overflow-hidden h-64 sm:h-80"><img src="${art.image}" class="w-full h-full object-cover"></div>` : ''}
+                <div class="space-y-4 text-slate-300 leading-relaxed text-sm sm:text-base whitespace-pre-line">${art.body}</div>
+            `;
+
+            renderComments(art.comments || []);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderComments(comments) {
+            const list = document.getElementById('comments-list');
+            if (comments.length === 0) {
+                list.innerHTML = `<p class="text-xs text-dark-muted italic">Belum ada komentar. Jadilah yang pertama memberikan tanggapan!</p>`;
+                return;
+            }
+            list.innerHTML = comments.map(c => `
+                <div class="bg-dark-bg p-4 rounded-xl border border-dark-border">
+                    <div class="font-semibold text-sm text-white mb-1">${c.name}</div>
+                    <p class="text-xs sm:text-sm text-dark-muted">${c.text}</p>
+                </div>
+            `).join('');
+        }
+
+        function addComment(e) {
+            e.preventDefault();
+            const name = document.getElementById('comment-name').value;
+            const text = document.getElementById('comment-text').value;
+
+            const art = articles.find(a => a.id === currentArticleId);
+            if (art) {
+                if (!art.comments) art.comments = [];
+                art.comments.push({ name, text });
+                localStorage.setItem('nalarkita_articles', JSON.stringify(articles));
+                renderComments(art.comments);
+                e.target.reset();
+            }
+        }
+
+        function goHome() {
+            document.getElementById('detail-view').classList.add('hidden');
+            document.getElementById('home-view').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openWriteModal() {
+            document.getElementById('write-modal').classList.remove('hidden');
+        }
+
+        function closeWriteModal() {
+            document.getElementById('write-modal').classList.add('hidden');
+        }
+
+        function saveArticle(e) {
+            e.preventDefault();
+            const title = document.getElementById('new-title').value;
+            const category = document.getElementById('new-category').value;
+            const image = document.getElementById('new-image').value;
+            const body = document.getElementById('new-body').value;
+
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const date = new Date().toLocaleDateString('id-ID', options);
+
+            const newArt = {
+                id: Date.now(),
+                title,
+                category,
+                date,
+                image,
+                excerpt: body.substring(0, 120) + '...',
+                body,
+                comments: []
+            };
+
+            articles.unshift(newArt);
+            localStorage.setItem('nalarkita_articles', JSON.stringify(articles));
+            closeWriteModal();
+            e.target.reset();
+            filterCategory('All');
+            goHome();
+        }
+
+        // Inisialisasi awal
+        renderArticles();
+    </script>
+</body>
+</html>
