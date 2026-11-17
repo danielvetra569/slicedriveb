@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SliceDrive — Platform Streaming & Pemutar Video Modern</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        darkbg: '#090D16',
+                        darkcard: '#111827',
+                        darksurface: '#182032',
+                        darkborder: '#1F2937',
+                        brand: {
+                            400: '#38BDF8',
+                            500: '#06B6D4',
+                            600: '#0284C7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.25);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.45);
+        }
+        .glass-nav {
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-darkbg dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col selection:bg-cyan-500 selection:text-white">
+
+    <!-- Notifikasi Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-slate-900 dark:bg-slate-800 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-cyan-500/30">
+            <svg class="w-5 h-5 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span id="toast-message" class="text-sm font-medium">Aksi berhasil dilakukan</span>
+        </div>
+    </div>
+
+    <!-- 1. NAVBAR UTAMA -->
+    <header class="sticky top-0 z-40 glass-nav bg-white/85 dark:bg-darkbg/90 border-b border-slate-200 dark:border-darkborder transition-colors duration-300">
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 gap-3 sm:gap-6">
+                
+                <!-- Brand Logo SliceDrive -->
+                <a href="#" onclick="goHome(event)" class="flex items-center gap-2.5 group shrink-0">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25 group-hover:scale-105 transition-transform">
+                        <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white leading-none">
+                            Slice<span class="text-cyan-400">Drive</span>
+                        </span>
+                        <span class="text-[10px] text-slate-400 tracking-widest uppercase hidden sm:inline">slicedrive.pro</span>
+                    </div>
+                </a>
+
+                <!-- Bilah Pencarian Real-Time -->
+                <div class="flex-1 max-w-xl mx-auto">
+                    <div class="relative flex items-center">
+                        <input type="text" id="searchInput" placeholder="Telusuri video, kreator, atau topik..." 
+                            class="w-full pl-4 pr-20 py-2 text-sm rounded-full bg-slate-100 dark:bg-darkcard border border-slate-200 dark:border-darkborder text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all">
+                        
+                        <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-11 text-slate-400 hover:text-slate-200 p-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+
+                        <div class="absolute right-1 top-1 bottom-1 px-3.5 rounded-full bg-slate-200/70 dark:bg-darksurface flex items-center justify-center text-slate-500 dark:text-slate-400 pointer-events-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Aksi Kanan -->
+                <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                    <!-- Tombol Tambah / Upload Video -->
+                    <button onclick="openUploadModal()" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-cyan-500/20 transition-all active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <span class="hidden sm:inline">Tambah Video</span>
+                    </button>
+
+                    <!-- Toggle Dark/Light Mode -->
+                    <button id="themeToggle" onclick="toggleTheme()" class="p-2.5 rounded-full bg-slate-100 dark:bg-darkcard border border-slate-200 dark:border-darkborder text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-darksurface transition-colors" aria-label="Ganti Tema">
+                        <svg id="sunIcon" class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <svg id="moonIcon" class="w-4 h-4 text-slate-700 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="flex-grow max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ================================================================= -->
+        <!-- VIEW 1: BERANDA (HERO BANNER + KATEGORI + GRID VIDEO)             -->
+        <!-- ================================================================= -->
+        <div id="homeView">
+            <!-- Filter Kategori Bar -->
+            <div id="categoryFilters" class="flex items-center gap-2.5 overflow-x-auto pb-4 mb-6 no-scrollbar">
+                <!-- Dirender via JS -->
+            </div>
+
+            <!-- Featured Video Banner (Tampil saat kategori 'Semua' dan tidak sedang mencari) -->
+            <section id="featuredBanner" class="mb-8">
+                <!-- Dirender via JS -->
+            </section>
+
+            <!-- Info Status Pencarian -->
+            <div id="filterStatus" class="hidden mb-6 flex items-center justify-between bg-cyan-500/10 border border-cyan-500/20 rounded-xl px-4 py-3 text-sm">
+                <span id="filterStatusText" class="text-cyan-600 dark:text-cyan-300 font-medium"></span>
+                <button onclick="resetFilters()" class="text-xs font-semibold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 hover:underline">Reset</button>
+            </div>
+
+            <!-- Header Grid Video -->
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="font-display text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="w-2 h-6 rounded-full bg-cyan-500 inline-block"></span>
+                    Rekomendasi Video
+                </h2>
+                <span id="videoCountLabel" class="text-xs text-slate-500 dark:text-slate-400"></span>
+            </div>
+
+            <!-- Responsive Video Grid -->
+            <div id="videoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-8">
+                <!-- Kartu video dirender via JS -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-20 px-4 rounded-2xl border border-dashed border-slate-300 dark:border-darkborder bg-white/50 dark:bg-darkcard/40">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 dark:bg-darksurface flex items-center justify-center text-slate-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-display text-lg font-bold text-slate-900 dark:text-white mb-1">Video tidak ditemukan</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-5">Tidak ada tayangan yang cocok dengan kata kunci atau kategori pilihan Anda.</p>
+                <button onclick="resetFilters()" class="px-5 py-2.5 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-medium transition-colors">
+                    Tampilkan Semua Video
+                </button>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- VIEW 2: HALAMAN PEMUTAR VIDEO UTAMA (WATCH VIEW + UP NEXT SIDEBAR) -->
+        <!-- ================================================================= -->
+        <div id="watchView" class="hidden">
+            <!-- Tombol Kembali -->
+            <div class="mb-4">
+                <button onclick="goHome()" class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Kembali ke Beranda
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+                <!-- Kolom Kiri (8/12): Pemutar Video, Info, Deskripsi & Komentar -->
+                <div class="lg:col-span-8">
+                    <!-- Container Pemutar Video 16:9 -->
+                    <div id="playerContainer" class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-darkborder">
+                        <!-- Video HTML5 atau Iframe dirender di sini -->
+                    </div>
+
+                    <!-- Judul & Meta Video -->
+                    <div class="mt-4">
+                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                            <span id="watchCategoryBadge" class="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-cyan-500/15 text-cyan-500">Kategori</span>
+                            <span id="watchCustomBadge" class="hidden px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-500/15 text-emerald-400">Video Unggahan Anda</span>
+                        </div>
+
+                        <h1 id="watchTitle" class="font-display text-xl sm:text-2xl font-bold text-slate-900 dark:text-white leading-snug">
+                            Judul Video
+                        </h1>
+
+                        <!-- Bar Channel & Tombol Aksi (Like, Share, Hapus) -->
+                        <div class="mt-4 pb-4 border-b border-slate-200 dark:border-darkborder flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <!-- Info Kreator / Channel -->
+                            <div class="flex items-center gap-3">
+                                <div id="watchChannelAvatar" class="w-11 h-11 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-white font-bold text-sm flex items-center justify-center shrink-0">
+                                    SD
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-1.5">
+                                        <h3 id="watchChannelName" class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">Nama Channel</h3>
+                                        <svg class="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <p id="watchSubscribers" class="text-xs text-slate-500 dark:text-slate-400">128 rb subscriber</p>
+                                </div>
+                            </div>
+
+                            <!-- Tombol Interaksi -->
+                            <div class="flex items-center flex-wrap gap-2">
+                                <!-- Tombol Like -->
+                                <button id="likeBtn" onclick="toggleLikeCurrentVideo()" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-darkcard hover:bg-slate-200 dark:hover:bg-darksurface border border-slate-200 dark:border-darkborder text-sm font-medium transition-all">
+                                    <svg id="likeIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                                    </svg>
+                                    <span id="watchLikeCount">0</span>
+                                </button>
+
+                                <!-- Tombol Bagikan -->
+                                <button onclick="shareCurrentVideo()" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 dark:bg-darkcard hover:bg-slate-200 dark:hover:bg-darksurface border border-slate-200 dark:border-darkborder text-sm font-medium transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                                    </svg>
+                                    <span>Bagikan</span>
+                                </button>
+
+                                <!-- Tombol Hapus (Khusus Video Buatan Sendiri) -->
+                                <button id="deleteVideoBtn" onclick="deleteCurrentVideo()" class="hidden inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 text-xs font-semibold transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                    <span>Hapus</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Kotak Deskripsi Video -->
+                        <div class="mt-4 p-4 sm:p-5 rounded-2xl bg-slate-100 dark:bg-darkcard border border-slate-200 dark:border-darkborder">
+                            <div class="flex items-center gap-3 text-xs sm:text-sm font-semibold text-slate-900 dark:text-white mb-2">
+                                <span id="watchViews">0x ditonton</span>
+                                <span>&bull;</span>
+                                <span id="watchDate">Tanggal unggah</span>
+                            </div>
+                            <p id="watchDescription" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                                Deskripsi video...
+                            </p>
+                        </div>
+
+                        <!-- Bagian Komentar -->
+                        <div class="mt-8">
+                            <h3 class="font-display text-lg font-bold text-slate-900 dark:text-white mb-5 flex items-center gap-2">
+                                <span>Komentar</span>
+                                <span id="watchCommentCount" class="px-2.5 py-0.5 text-xs rounded-full bg-cyan-500/15 text-cyan-400">0</span>
+                            </h3>
+
+                            <!-- Form Tambah Komentar -->
+                            <form onsubmit="submitVideoComment(event)" class="mb-6 bg-white dark:bg-darkcard p-4 rounded-2xl border border-slate-200 dark:border-darkborder space-y-3">
+                                <input type="text" id="commentAuthorInput" required placeholder="Nama Anda..." 
+                                    class="w-full sm:w-1/2 px-3.5 py-2 text-sm rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500">
+                                <textarea id="commentBodyInput" rows="2" required placeholder="Tambahkan komentar publik..." 
+                                    class="w-full px-3.5 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"></textarea>
+                                <div class="flex justify-end">
+                                    <button type="submit" class="px-5 py-2 rounded-full bg-cyan-600 hover:bg-cyan-500 text-white text-xs sm:text-sm font-semibold transition-colors">
+                                        Kirim Komentar
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Daftar Komentar -->
+                            <div id="watchCommentsList" class="space-y-3.5">
+                                <!-- Dirender via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan (4/12): Daftar Video Berikutnya (Up Next Sidebar) -->
+                <aside class="lg:col-span-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-display text-base font-bold text-slate-900 dark:text-white">Video Berikutnya</h3>
+                        <span class="text-xs text-cyan-400 font-medium">Putar Otomatis</span>
+                    </div>
+
+                    <div id="upNextList" class="space-y-3.5">
+                        <!-- Daftar rekomendasi samping dirender via JS -->
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-200 dark:border-darkborder bg-white dark:bg-darkcard/50 mt-14">
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+            <div class="flex items-center gap-2">
+                <span class="font-display font-bold text-sm text-slate-900 dark:text-white">Slice<span class="text-cyan-400">Drive</span></span>
+                <span>&bull;</span>
+                <span>slicedrive.pro</span>
+            </div>
+            <div class="flex items-center gap-5">
+                <button onclick="goHome(event)" class="hover:text-cyan-400 transition-colors">Beranda</button>
+                <button onclick="openUploadModal()" class="hover:text-cyan-400 transition-colors">Unggah Video</button>
+                <button onclick="resetDemoData()" class="hover:text-rose-400 transition-colors">Reset Data Bawaan</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL UPLOAD / TAMBAH VIDEO BARU                                      -->
+    <!-- ===================================================================== -->
+    <div id="uploadModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-950/80 backdrop-blur-sm p-3 sm:p-6">
+        <div class="min-h-full flex items-center justify-center">
+            <div class="relative w-full max-w-xl bg-white dark:bg-darkcard border border-slate-200 dark:border-darkborder rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden my-4">
+                
+                <div class="flex items-center justify-between px-6 py-5 border-b border-slate-200 dark:border-darkborder">
+                    <div>
+                        <h3 class="font-display text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Tambah Video Baru</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Mendukung tautan langsung MP4 atau tautan YouTube.</p>
+                    </div>
+                    <button onclick="closeUploadModal()" class="p-2 rounded-full bg-slate-100 dark:bg-darksurface text-slate-500 hover:text-white transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form id="uploadVideoForm" onsubmit="handleAddVideo(event)" class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Judul Video *</label>
+                        <input type="text" id="vidTitle" required placeholder="Contoh: Tutorial Setup Server Cloud dari Nol" 
+                            class="w-full px-4 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Kategori *</label>
+                            <select id="vidCategory" required 
+                                class="w-full px-4 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500">
+                                <option value="Tutorial">Tutorial</option>
+                                <option value="Teknologi">Teknologi</option>
+                                <option value="Hiburan">Hiburan</option>
+                                <option value="Gaming">Gaming</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nama Channel / Kreator *</label>
+                            <input type="text" id="vidChannel" required value="SliceDrive Creator"
+                                class="w-full px-4 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">URL Video (MP4 atau YouTube) *</label>
+                        <input type="url" id="vidUrl" required placeholder="https://www.youtube.com/watch?v=... atau https://.../video.mp4" 
+                            class="w-full px-4 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500">
+                        <p class="text-[11px] text-slate-400 mt-1">Tips: Masukkan link YouTube biasa atau file .mp4 langsung, sistem akan otomatis menyesuaikan pemutarnya.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">URL Thumbnail (Opsional)</label>
+                            <input type="url" id="vidThumb" placeholder="https://images.unsplash.com/..." 
+                                class="w-full px-4 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Durasi</label>
+                            <input type="text" id="vidDuration" placeholder="10:25" value="08:45"
+                                class="w-full px-4 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Deskripsi Video *</label>
+                        <textarea id="vidDesc" rows="3" required placeholder="Jelaskan isi video Anda secara singkat..." 
+                            class="w-full px-4 py-2.5 text-sm rounded-xl bg-slate-50 dark:bg-darkbg border border-slate-200 dark:border-darkborder text-slate-900 dark:text-white focus:outline-none focus:border-cyan-500"></textarea>
+                    </div>
+
+                    <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-200 dark:border-darkborder">
+                        <button type="button" onclick="closeUploadModal()" class="px-4 py-2.5 rounded-full text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-darksurface transition-colors">
+                            Batal
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-sm font-semibold shadow-lg shadow-cyan-500/20 transition-all">
+                            Publikasikan Video
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT ENGINE -->
+    <script>
+        const STORAGE_KEY = 'slicedrive_videos_v1';
+        const THEME_KEY = 'slicedrive_theme_v1';
+
+        // Data Video Bawaan (Menggunakan video MP4 publik open-source yang lancar diputar)
+        const DEFAULT_VIDEOS = [
+            {
+                id: 'vid-1',
+                title: 'Big Buck Bunny 4K — Demonstrasi Animasi Open Source & Kualitas Streaming',
+                category: 'Hiburan',
+                channel: 'Blender Studio',
+                subscribers: '1,4 jt subscriber',
+                views: 48200,
+                likes: 3420,
+                liked: false,
+                date: '16 November 2026',
+                duration: '09:56',
+                featured: true,
+                isCustom: false,
+                thumbnail: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&q=80',
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                description: 'Nikmati tayangan film pendek animasi klasik yang dirender ulang untuk menguji kelancaran pemutar video HTML5 beresolusi tinggi di platform SliceDrive.\n\nFitur pemutar mendukung kontrol kecepatan, mode layar penuh (fullscreen), serta Picture-in-Picture.',
+                comments: [
+                    { id: 'c1', author: 'Andi Pratama', date: '2 jam lalu', text: 'Pemutar videonya ringan banget dan langsung jalan tanpa buffering!' },
+                    { id: 'c2', author: 'Siti Rahma', date: '5 jam lalu', text: 'Tampilan dark mode SliceDrive bikin nyaman nonton di malam hari.' }
+                ]
+            },
+            {
+                id: 'vid-2',
+                title: 'Tears of Steel — Film Pendek Sci-Fi & Efek Visual Sinematik',
+                category: 'Teknologi',
+                channel: 'OpenMovie Hub',
+                subscribers: '890 rb subscriber',
+                views: 31500,
+                likes: 2150,
+                liked: false,
+                date: '14 November 2026',
+                duration: '12:14',
+                featured: false,
+                isCustom: false,
+                thumbnail: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80',
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+                description: 'Sebuah karya sinematik fiksi ilmiah yang menggabungkan pengambilan gambar live-action dengan efek visual CGI modern.',
+                comments: [
+                    { id: 'c3', author: 'Reza Gunawan', date: '1 hari lalu', text: 'Efek visual dan grading warnanya keren sekali.' }
+                ]
+            },
+            {
+                id: 'vid-3',
+                title: 'Sintel — Petualangan Fantasi & Seni Digital Modern',
+                category: 'Gaming',
+                channel: 'VFX & Game Lab',
+                subscribers: '540 rb subscriber',
+                views: 27900,
+                likes: 1890,
+                liked: false,
+                date: '12 November 2026',
+                duration: '14:48',
+                featured: false,
+                isCustom: false,
+                thumbnail: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=80',
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+                description: 'Kisah perjalanan epik seorang pengembara muda dalam mencari naga kecil yang hilang di dunia fantasi yang luas.',
+                comments: []
+            },
+            {
+                id: 'vid-4',
+                title: 'Panduan Pengujian Streaming Video Adaptif & Otomotif Modern',
+                category: 'Tutorial',
+                channel: 'TechDrive Indonesia',
+                subscribers: '310 rb subscriber',
+                views: 15400,
+                likes: 940,
+                liked: false,
+                date: '10 November 2026',
+                duration: '07:32',
+                featured: false,
+                isCustom: false,
+                thumbnail: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=900&q=80',
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+                description: 'Ulasan singkat mengenai kejernihan audio dan stabilitas frame rate saat memutar video berkecepatan tinggi di browser.',
+                comments: []
+            },
+            {
+                id: 'vid-5',
+                title: 'Eksplorasi Sinematografi Alam & Ketajaman Warna Layar OLED',
+                category: 'Hiburan',
+                channel: 'VisualCraft',
+                subscribers: '620 rb subscriber',
+                views: 19800,
+                likes: 1320,
+                liked: false,
+                date: '08 November 2026',
+                duration: '06:15',
+                featured: false,
+                isCustom: false,
+                thumbnail: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=900&q=80',
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+                description: 'Kompilasi cuplikan visual dinamis yang dirancang khusus untuk memanjakan mata pada layar beresolusi tinggi.',
+                comments: []
+            },
+            {
+                id: 'vid-6',
+                title: 'Membangun Infrastruktur Cloud & Server Video Mandiri',
+                category: 'Tutorial',
+                channel: 'DevOps Nusantara',
+                subscribers: '215 rb subscriber',
+                views: 11200,
+                likes: 870,
+                liked: false,
+                date: '05 November 2026',
+                duration: '11:05',
+                featured: false,
+                isCustom: false,
+                thumbnail: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=900&q=80',
+                videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                description: 'Pelajari arsitektur dasar pengiriman berkas media melalui jaringan distribusi konten (CDN) agar tetap cepat diakses dari mana saja.',
+                comments: []
+            }
+        ];
+
+        const CATEGORIES = ['Semua', 'Tutorial', 'Teknologi', 'Hiburan', 'Gaming'];
+
+        const CATEGORY_THUMBNAILS = {
+            'Tutorial': 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=900&q=80',
+            'Teknologi': 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80',
+            'Hiburan': 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=900&q=80',
+            'Gaming': 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=80'
+        };
+
+        // State Aplikasi
+        let videos = [];
+        let activeCategory = 'Semua';
+        let searchQuery = '';
+        let currentVideoId = null;
+
+        // =====================================================================
+        // INISIALISASI & LOCALSTORAGE
+        // =====================================================================
+        function initApp() {
+            initTheme();
+            loadVideos();
+            renderCategoryPills();
+            renderHome();
+            setupSearch();
+        }
+
+        function loadVideos() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    videos = JSON.parse(saved);
+                } else {
+                    videos = [...DEFAULT_VIDEOS];
+                    saveVideos();
+                }
+            } catch (e) {
+                videos = [...DEFAULT_VIDEOS];
+            }
+        }
+
+        function saveVideos() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(videos));
+            } catch (e) {
+                console.error('Gagal menyimpan data video:', e);
+            }
+        }
+
+        function resetDemoData() {
+            localStorage.removeItem(STORAGE_KEY);
+            videos = [...DEFAULT_VIDEOS];
+            saveVideos();
+            goHome();
+            resetFilters();
+            showToast('Daftar video berhasil dikembalikan ke pengaturan awal');
+        }
+
+        // =====================================================================
+        // TEMA DARK / LIGHT MODE
+        // =====================================================================
+        function initTheme() {
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            const htmlEl = document.documentElement;
+            const sunIcon = document.getElementById('sunIcon');
+            const moonIcon = document.getElementById('moonIcon');
+
+            if (savedTheme === 'light') {
+                htmlEl.classList.remove('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                htmlEl.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+        }
+
+        function toggleTheme() {
+            const htmlEl = document.documentElement;
+            const sunIcon = document.getElementById('sunIcon');
+            const moonIcon = document.getElementById('moonIcon');
+
+            if (htmlEl.classList.contains('dark')) {
+                htmlEl.classList.remove('dark');
+                localStorage.setItem(THEME_KEY, 'light');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                showToast('Mode Terang aktif');
+            } else {
+                htmlEl.classList.add('dark');
+                localStorage.setItem(THEME_KEY, 'dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                showToast('Mode Gelap aktif');
+            }
+        }
+
+        // =====================================================================
+        // RENDER HALAMAN BERANDA (KATEGORI, BANNER, GRID VIDEO)
+        // =====================================================================
+        function renderHome() {
+            renderFeaturedBanner();
+            renderVideoGrid();
+            updateFilterStatus();
+        }
+
+        function renderCategoryPills() {
+            const container = document.getElementById('categoryFilters');
+            container.innerHTML = CATEGORIES.map(cat => {
+                const isActive = activeCategory === cat;
+                const classes = isActive
+                    ? 'bg-cyan-500 text-slate-950 font-semibold shadow-md shadow-cyan-500/20'
+                    : 'bg-white dark:bg-darkcard text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-darkborder hover:bg-slate-100 dark:hover:bg-darksurface';
+                
+                return `
+                    <button onclick="setCategory('${cat}')" 
+                        class="px-4 py-1.5 rounded-full text-xs sm:text-sm transition-all whitespace-nowrap ${classes}">
+                        ${cat}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderFeaturedBanner() {
+            const banner = document.getElementById('featuredBanner');
+            if (activeCategory !== 'Semua' || searchQuery.trim() !== '') {
+                banner.classList.add('hidden');
+                return;
+            }
+
+            banner.classList.remove('hidden');
+            const featured = videos.find(v => v.featured) || videos[0];
+            if (!featured) {
+                banner.innerHTML = '';
+                return;
+            }
+
+            banner.innerHTML = `
+                <div onclick="watchVideo('${featured.id}')" class="group cursor-pointer relative rounded-3xl overflow-hidden bg-slate-900 border border-slate-200 dark:border-darkborder shadow-xl">
+                    <div class="relative h-64 sm:h-80 lg:h-[380px] w-full overflow-hidden">
+                        <img src="${featured.thumbnail}" alt="${escapeHtml(featured.title)}" 
+                            onerror="this.src='https://placehold.co/1280x500/0f172a/38bdf8?text=SliceDrive+Featured'"
+                            class="w-full h-full object-cover opacity-75 group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-darkbg via-darkbg/60 to-transparent"></div>
+                        <div class="absolute inset-0 bg-gradient-to-r from-darkbg/90 via-darkbg/40 to-transparent"></div>
+
+                        <div class="absolute bottom-0 left-0 right-0 p-6 sm:p-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+                            <div class="max-w-2xl">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500 text-slate-950 uppercase tracking-wider">
+                                        Tayangan Unggulan
+                                    </span>
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-white backdrop-blur-md">
+                                        ${escapeHtml(featured.category)} &bull; ${escapeHtml(featured.duration)}
+                                    </span>
+                                </div>
+                                <h1 class="font-display text-xl sm:text-3xl font-extrabold text-white leading-tight mb-2 group-hover:text-cyan-400 transition-colors">
+                                    ${escapeHtml(featured.title)}
+                                </h1>
+                                <p class="text-xs sm:text-sm text-slate-300 line-clamp-2 mb-4">
+                                    ${escapeHtml(featured.description)}
+                                </p>
+                                <div class="flex items-center gap-3 text-xs text-slate-400">
+                                    <span class="font-semibold text-white">${escapeHtml(featured.channel)}</span>
+                                    <span>&bull;</span>
+                                    <span>${formatViews(featured.views)} ditonton</span>
+                                </div>
+                            </div>
+
+                            <button class="self-start sm:self-end inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/30 transition-all shrink-0">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                                <span>Tonton Sekarang</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderVideoGrid() {
+            const grid = document.getElementById('videoGrid');
+            const emptyState = document.getElementById('emptyState');
+            const countLabel = document.getElementById('videoCountLabel');
+
+            const filtered = videos.filter(v => {
+                const matchCat = activeCategory === 'Semua' || v.category === activeCategory;
+                const q = searchQuery.toLowerCase().trim();
+                const matchQuery = !q || 
+                    v.title.toLowerCase().includes(q) || 
+                    v.channel.toLowerCase().includes(q) || 
+                    v.category.toLowerCase().includes(q);
+                return matchCat && matchQuery;
+            });
+
+            countLabel.textContent = `${filtered.length} video tersedia`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = filtered.map(v => `
+                <div onclick="watchVideo('${v.id}')" class="group cursor-pointer flex flex-col">
+                    <!-- Thumbnail Container -->
+                    <div class="relative aspect-video rounded-2xl overflow-hidden bg-slate-800 border border-slate-200/60 dark:border-darkborder mb-3">
+                        <img src="${v.thumbnail}" alt="${escapeHtml(v.title)}" 
+                            onerror="this.src='https://placehold.co/800x450/1e293b/38bdf8?text=SliceDrive+Video'"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        
+                        <!-- Hover Play Overlay -->
+                        <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <div class="w-12 h-12 rounded-full bg-cyan-500/95 text-slate-950 flex items-center justify-center shadow-xl transform scale-90 group-hover:scale-100 transition-transform">
+                                <svg class="w-6 h-6 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Badge Durasi -->
+                        <span class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-black/85 text-white tracking-wide">
+                            ${escapeHtml(v.duration || '05:00')}
+                        </span>
+
+                        ${v.isCustom ? `<span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500 text-slate-950 uppercase">Baru</span>` : ''}
+                    </div>
+
+                    <!-- Info Video -->
+                    <div class="flex gap-3">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 border border-slate-600/40 text-cyan-400 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                            ${getInitials(v.channel)}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-display text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:text-cyan-500 dark:group-hover:text-cyan-400 transition-colors">
+                                ${escapeHtml(v.title)}
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 hover:text-slate-300">
+                                ${escapeHtml(v.channel)}
+                            </p>
+                            <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                <span>${formatViews(v.views)} ditonton</span>
+                                <span>&bull;</span>
+                                <span>${escapeHtml(v.date)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // =====================================================================
+        // HALAMAN PEMUTAR VIDEO (WATCH VIEW)
+        // =====================================================================
+        function watchVideo(id) {
+            const video = videos.find(v => v.id === id);
+            if (!video) return;
+
+            currentVideoId = id;
+            // Tambah jumlah tayangan (+1 view)
+            video.views = (video.views || 0) + 1;
+            saveVideos();
+
+            // Ganti tampilan ke Watch View
+            document.getElementById('homeView').classList.add('hidden');
+            document.getElementById('watchView').classList.remove('hidden');
+
+            // Render Pemutar Video (Deteksi apakah YouTube/Iframe atau MP4 langsung)
+            const playerContainer = document.getElementById('playerContainer');
+            const embedUrl = getYouTubeEmbedUrl(video.videoUrl);
+
+            if (embedUrl) {
+                playerContainer.innerHTML = `
+                    <iframe class="w-full h-full" src="${embedUrl}?autoplay=1&rel=0" 
+                        title="${escapeHtml(video.title)}" frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen></iframe>
+                `;
+            } else {
+                playerContainer.innerHTML = `
+                    <video id="html5Player" class="w-full h-full bg-black" controls autoplay playsinline poster="${video.thumbnail}">
+                        <source src="${video.videoUrl}" type="video/mp4">
+                        Browser Anda tidak mendukung pemutar video HTML5.
+                    </video>
+                `;
+            }
+
+            // Isi Detail Metadata Video
+            document.getElementById('watchCategoryBadge').textContent = video.category;
+            document.getElementById('watchTitle').textContent = video.title;
+            document.getElementById('watchChannelAvatar').textContent = getInitials(video.channel);
+            document.getElementById('watchChannelName').textContent = video.channel;
+            document.getElementById('watchSubscribers').textContent = video.subscribers || '100 rb subscriber';
+            document.getElementById('watchViews').textContent = `${formatViews(video.views)} ditonton`;
+            document.getElementById('watchDate').textContent = video.date;
+            document.getElementById('watchDescription').textContent = video.description;
+
+            // Tombol Hapus jika video buatan sendiri
+            const delBtn = document.getElementById('deleteVideoBtn');
+            const customBadge = document.getElementById('watchCustomBadge');
+            if (video.isCustom) {
+                delBtn.classList.remove('hidden');
+                customBadge.classList.remove('hidden');
+            } else {
+                delBtn.classList.add('hidden');
+                customBadge.classList.add('hidden');
+            }
+
+            updateLikeButtonUI(video);
+            renderWatchComments(video);
+            renderUpNextSidebar(id);
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goHome(e) {
+            if (e) e.preventDefault();
+            // Hentikan pemutar video yang sedang berjalan
+            document.getElementById('playerContainer').innerHTML = '';
+            currentVideoId = null;
+
+            document.getElementById('watchView').classList.add('hidden');
+            document.getElementById('homeView').classList.remove('hidden');
+            renderHome();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderUpNextSidebar(activeId) {
+            const container = document.getElementById('upNextList');
+            const others = videos.filter(v => v.id !== activeId);
+
+            container.innerHTML = others.map(v => `
+                <div onclick="watchVideo('${v.id}')" class="group cursor-pointer flex gap-3 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-darkcard transition-colors">
+                    <div class="relative w-40 aspect-video rounded-xl overflow-hidden bg-slate-800 shrink-0">
+                        <img src="${v.thumbnail}" alt="${escapeHtml(v.title)}" 
+                            onerror="this.src='https://placehold.co/400x225/1e293b/38bdf8?text=Video'"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-black/85 text-white">
+                            ${escapeHtml(v.duration || '05:00')}
+                        </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-display text-xs sm:text-sm font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:text-cyan-400 transition-colors">
+                            ${escapeHtml(v.title)}
+                        </h4>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 truncate">${escapeHtml(v.channel)}</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${formatViews(v.views)} ditonton</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // =====================================================================
+        // INTERAKSI LIKE, SHARE & KOMENTAR VIDEO
+        // =====================================================================
+        function toggleLikeCurrentVideo() {
+            if (!currentVideoId) return;
+            const video = videos.find(v => v.id === currentVideoId);
+            if (!video) return;
+
+            video.liked = !video.liked;
+            video.likes = (video.likes || 0) + (video.liked ? 1 : -1);
+            saveVideos();
+            updateLikeButtonUI(video);
+            showToast(video.liked ? 'Video ditambahkan ke daftar disukai' : 'Batal menyukai video');
+        }
+
+        function updateLikeButtonUI(video) {
+            const btn = document.getElementById('likeBtn');
+            const icon = document.getElementById('likeIcon');
+            const count = document.getElementById('watchLikeCount');
+
+            count.textContent = formatViews(video.likes || 0);
+            if (video.liked) {
+                btn.classList.add('border-cyan-500', 'text-cyan-400', 'bg-cyan-500/10');
+                icon.setAttribute('fill', 'currentColor');
+            } else {
+                btn.classList.remove('border-cyan-500', 'text-cyan-400', 'bg-cyan-500/10');
+                icon.setAttribute('fill', 'none');
+            }
+        }
+
+        function shareCurrentVideo() {
+            const url = window.location.href;
+            const tempInput = document.createElement('input');
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('Tautan video berhasil disalin ke papan klip!');
+        }
+
+        function renderWatchComments(video) {
+            const list = document.getElementById('watchCommentsList');
+            const countBadge = document.getElementById('watchCommentCount');
+            const comments = video.comments || [];
+
+            countBadge.textContent = comments.length;
+
+            if (comments.length === 0) {
+                list.innerHTML = `<p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 italic py-4 text-center">Belum ada komentar pada video ini.</p>`;
+                return;
+            }
+
+            list.innerHTML = comments.map(c => `
+                <div class="flex gap-3 p-4 rounded-2xl bg-white dark:bg-darkcard border border-slate-200 dark:border-darkborder">
+                    <div class="w-8 h-8 rounded-full bg-cyan-500/15 text-cyan-400 font-bold text-xs flex items-center justify-center shrink-0">
+                        ${getInitials(c.author)}
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">${escapeHtml(c.author)}</span>
+                            <span class="text-[11px] text-slate-400">${escapeHtml(c.date)}</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">${escapeHtml(c.text)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function submitVideoComment(e) {
+            e.preventDefault();
+            if (!currentVideoId) return;
+
+            const author = document.getElementById('commentAuthorInput').value.trim();
+            const text = document.getElementById('commentBodyInput').value.trim();
+            if (!author || !text) return;
+
+            const video = videos.find(v => v.id === currentVideoId);
+            if (!video) return;
+
+            if (!video.comments) video.comments = [];
+            video.comments.unshift({
+                id: 'c-' + Date.now(),
+                author,
+                date: 'Baru saja',
+                text
+            });
+
+            saveVideos();
+            renderWatchComments(video);
+            document.getElementById('commentBodyInput').value = '';
+            showToast('Komentar berhasil dikirim');
+        }
+
+        function deleteCurrentVideo() {
+            if (!currentVideoId) return;
+            videos = videos.filter(v => v.id !== currentVideoId);
+            saveVideos();
+            goHome();
+            showToast('Video berhasil dihapus');
+        }
+
+        // =====================================================================
+        // MODAL TAMBAH / UNGGAH VIDEO BARU
+        // =====================================================================
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function handleAddVideo(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('vidTitle').value.trim();
+            const category = document.getElementById('vidCategory').value;
+            const channel = document.getElementById('vidChannel').value.trim() || 'SliceDrive Creator';
+            const videoUrl = document.getElementById('vidUrl').value.trim();
+            const customThumb = document.getElementById('vidThumb').value.trim();
+            const duration = document.getElementById('vidDuration').value.trim() || '05:00';
+            const description = document.getElementById('vidDesc').value.trim();
+
+            if (!title || !videoUrl || !description) return;
+
+            // Otomatis ambil thumbnail YouTube jika URL adalah YouTube dan user tidak mengisi thumbnail
+            let finalThumb = customThumb;
+            if (!finalThumb) {
+                const ytId = extractYouTubeId(videoUrl);
+                if (ytId) {
+                    finalThumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+                } else {
+                    finalThumb = CATEGORY_THUMBNAILS[category] || CATEGORY_THUMBNAILS['Teknologi'];
+                }
+            }
+
+            const newVideo = {
+                id: 'vid-' + Date.now(),
+                title,
+                category,
+                channel,
+                subscribers: '12,4 rb subscriber',
+                views: 1,
+                likes: 1,
+                liked: true,
+                date: 'Baru saja',
+                duration,
+                featured: false,
+                isCustom: true,
+                thumbnail: finalThumb,
+                videoUrl,
+                description,
+                comments: []
+            };
+
+            videos.unshift(newVideo);
+            saveVideos();
+
+            document.getElementById('uploadVideoForm').reset();
+            closeUploadModal();
+            watchVideo(newVideo.id);
+            showToast('Video baru berhasil ditambahkan & diputar!');
+        }
+
+        // =====================================================================
+        // PENCARIAN & FILTER KATEGORI
+        // =====================================================================
+        function setupSearch() {
+            const input = document.getElementById('searchInput');
+            const clearBtn = document.getElementById('clearSearchBtn');
+
+            input.addEventListener('input', (e) => {
+                searchQuery = e.target.value;
+                clearBtn.classList.toggle('hidden', searchQuery.length === 0);
+                if (currentVideoId) {
+                    goHome();
+                } else {
+                    renderHome();
+                }
+            });
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            renderHome();
+        }
+
+        function setCategory(cat) {
+            activeCategory = cat;
+            renderCategoryPills();
+            renderHome();
+        }
+
+        function resetFilters() {
+            activeCategory = 'Semua';
+            clearSearch();
+            renderCategoryPills();
+            renderHome();
+        }
+
+        function updateFilterStatus() {
+            const box = document.getElementById('filterStatus');
+            const text = document.getElementById('filterStatusText');
+
+            if (activeCategory === 'Semua' && searchQuery.trim() === '') {
+                box.classList.add('hidden');
+                return;
+            }
+
+            box.classList.remove('hidden');
+            let info = [];
+            if (activeCategory !== 'Semua') info.push(`Kategori "${activeCategory}"`);
+            if (searchQuery.trim() !== '') info.push(`Pencarian "${searchQuery.trim()}"`);
+            text.textContent = `Menampilkan hasil untuk: ${info.join(' • ')}`;
+        }
+
+        // =====================================================================
+        // UTILITAS HELPER (YOUTUBE PARSER, FORMAT ANGKA, ESCAPE HTML)
+        // =====================================================================
+        function extractYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function getYouTubeEmbedUrl(url) {
+            const id = extractYouTubeId(url);
+            return id ? `https://www.youtube.com/embed/${id}` : null;
+        }
+
+        function formatViews(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1).replace('.0', '') + ' jt';
+            if (num >= 1000) return (num / 1000).toFixed(1).replace('.0', '') + ' rb';
+            return num.toString();
+        }
+
+        function getInitials(name) {
+            if (!name) return 'SD';
+            const parts = name.trim().split(' ');
+            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+            return (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        let toastTimer;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeUploadModal();
+        });
+
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
