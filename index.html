@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -7,6 +6,26 @@
 <title>VideoKu - Koleksi Video</title>
 <link rel="stylesheet" href="./style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ========================================== -->
+<!-- SKRIP IKLAN TAMBAHAN (DI BAGIAN HEAD)      -->
+<!-- ========================================== -->
+<script data-cfasync="false" src="https://aarems.org/1/83cc953206f8c39205033005bd3e6c1a"></script>
+<script data-cfasync="false" src="https://bancadeltempoidea.org/14/0b6c94865d260b69f091b59cb66be542"></script>
+<!-- ========================================== -->
+
+<style>
+/* CSS Tambahan agar tata letak iklan rapi */
+.ad-container {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+.native-ad-wrap {
+  margin: 20px 0;
+}
+</style>
 </head>
 <body>
 <header class="site-header">
@@ -27,6 +46,22 @@
     <p id="mainDescription" class="featured-description">Koleksi video pilihan kamu.</p>
   </section>
 
+  <!-- ========================================== -->
+  <!-- 1. IKLAN BANNER IFRAME (728x90)            -->
+  <!-- ========================================== -->
+  <div class="ad-container">
+    <script>
+      atOptions = {
+        'key' : '489342048df66e3789ebbcf95f4a12e2',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    </script>
+    <script src="https://bancadeltempoidea.org/22/489342048df66e3789ebbcf95f4a12e2"></script>
+  </div>
+
   <section class="collection-section">
     <div class="section-heading">
       <div>
@@ -35,6 +70,15 @@
       </div>
       <span id="videoCount" class="count-label">0 video</span>
     </div>
+
+    <!-- ========================================== -->
+    <!-- 2. IKLAN NATIVE / CONTAINER                -->
+    <!-- ========================================== -->
+    <div class="native-ad-wrap">
+      <script async="async" data-cfasync="false" src="https://bancadeltempoidea.org/21/580538d6da5e19898741a77320afdabd"></script>
+      <div id="container-580538d6da5e19898741a77320afdabd"></div>
+    </div>
+
     <div id="videoGrid" class="video-grid">
       <p class="empty">Memuat video...</p>
     </div>
@@ -106,7 +150,7 @@ async function muatVideo() {
     grid.appendChild(card);
   });
 
-  pilihVideo(data[0]);
+  pilihVideo(data.length ? data[0] : null);
 }
 
 muatVideo();
