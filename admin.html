@@ -45,15 +45,13 @@
     <form id="uploadForm">
       <label>Judul video</label>
       <input id="title" type="text" required placeholder="Masukkan judul video">
-
       <label>Deskripsi</label>
       <textarea id="description" rows="3" placeholder="Deskripsi video"></textarea>
-
       <label>File video</label>
       <input id="videoFile" type="file" accept="video/*" required>
-
       <button class="primary-button" type="submit">Upload Video</button>
     </form>
+
     <p id="uploadStatus" class="status"></p>
 
     <hr>
@@ -99,11 +97,13 @@ document.getElementById("logoutButton").addEventListener("click", async () => {
 
 document.getElementById("uploadForm").addEventListener("submit", async (event) => {
   event.preventDefault();
+
   const title = document.getElementById("title").value.trim();
   const description = document.getElementById("description").value.trim();
   const file = document.getElementById("videoFile").files[0];
 
   if (!file) return;
+
   uploadStatus.textContent = "Sedang mengunggah video...";
 
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -116,25 +116,67 @@ document.getElementById("uploadForm").addEventListener("submit", async (event) =
     return;
   }
 
-  const { error: insertError } = await db.from("videos").insert({
-    title,
-    description,
-    storage_path: path
-  });
+  const { data: savedVideo, error: insertError } = await db
+    .from("videos")
+    .insert({
+      title,
+      description,
+      storage_path: path
+    })
+    .select("share_code")
+    .single();
 
-  if (insertError) {
+  if (insertError || !savedVideo) {
     await db.storage.from("videos").remove([path]);
-    uploadStatus.textContent = "Gagal menyimpan data: " + insertError.message;
+    uploadStatus.textContent = "Gagal menyimpan data: " +
+      (insertError ? insertError.message : "Data tidak ditemukan");
     return;
   }
 
-  uploadStatus.textContent = "Video berhasil diunggah!";
+  if (!savedVideo.share_code) {
+    uploadStatus.textContent = "Video tersimpan, tetapi kode unik tidak ditemukan.";
+    document.getElementById("uploadForm").reset();
+    muatDaftar();
+    return;
+  }
+
+  const shareUrl = "https://cdn.aciemg.my.id/e/" + savedVideo.share_code;
+
+  uploadStatus.textContent = "Video berhasil diunggah! Link penonton: ";
+
+  const link = document.createElement("a");
+  link.href = shareUrl;
+  link.textContent = shareUrl;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+
+  uploadStatus.appendChild(document.createElement("br"));
+  uploadStatus.appendChild(link);
+
+  const copyButton = document.createElement("button");
+  copyButton.type = "button";
+  copyButton.className = "secondary";
+  copyButton.textContent = "Salin Link";
+
+  copyButton.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      copyButton.textContent = "Link Tersalin!";
+    } catch {
+      copyButton.textContent = "Salin manual dari link di atas";
+    }
+  });
+
+  uploadStatus.appendChild(document.createElement("br"));
+  uploadStatus.appendChild(copyButton);
+
   document.getElementById("uploadForm").reset();
   muatDaftar();
 });
 
 async function muatDaftar() {
   manageList.textContent = "Memuat daftar video...";
+
   const { data, error } = await db.from("videos")
     .select("*").order("created_at", { ascending: false });
 
@@ -144,6 +186,7 @@ async function muatDaftar() {
   }
 
   manageList.innerHTML = "";
+
   if (!data.length) {
     manageList.textContent = "Belum ada video.";
     return;
@@ -156,6 +199,18 @@ async function muatDaftar() {
     const name = document.createElement("strong");
     name.textContent = video.title || "Tanpa judul";
 
+    item.appendChild(name);
+
+    if (video.share_code) {
+      const link = document.createElement("a");
+      link.href = "https://cdn.aciemg.my.id/e/" + video.share_code;
+      link.textContent = "Buka Link Penonton";
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      item.appendChild(document.createElement("br"));
+      item.appendChild(link);
+    }
+
     const remove = document.createElement("button");
     remove.className = "danger";
     remove.type = "button";
@@ -163,9 +218,11 @@ async function muatDaftar() {
 
     remove.addEventListener("click", async () => {
       if (!confirm("Yakin ingin menghapus video ini?")) return;
+
       remove.disabled = true;
 
       const { error: storageError } = await db.storage.from("videos").remove([video.storage_path]);
+
       if (storageError) {
         alert("Gagal menghapus file: " + storageError.message);
         remove.disabled = false;
@@ -173,13 +230,15 @@ async function muatDaftar() {
       }
 
       const { error: rowError } = await db.from("videos").delete().eq("id", video.id);
+
       if (rowError) {
         alert("File terhapus, tetapi data gagal dihapus: " + rowError.message);
       }
+
       muatDaftar();
     });
 
-    item.append(name, remove);
+    item.appendChild(remove);
     manageList.appendChild(item);
   });
 }
