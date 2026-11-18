@@ -1,121 +1,156 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#635bdb">
-<title>VideoKu — Tonton Video</title>
+<title>VideoKu - Koleksi Video</title>
+<link rel="stylesheet" href="./style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ========================================== -->
+<!-- SKRIP IKLAN TAMBAHAN (DI BAGIAN HEAD)      -->
+<!-- ========================================== -->
+<script data-cfasync="false" src="https://aarems.org/1/83cc953206f8c39205033005bd3e6c1a"></script>
+<script data-cfasync="false" src="https://bancadeltempoidea.org/14/0b6c94865d260b69f091b59cb66be542"></script>
+<!-- ========================================== -->
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f4fb;color:#202536}
-header{background:linear-gradient(135deg,#635bdb,#8178f2);padding:20px;box-shadow:0 4px 15px #635bdb33}
-.header-inner{max-width:1000px;margin:auto}
-.logo{color:white;font-size:25px;font-weight:bold;text-decoration:none}
-.logo span{color:#ffe58a}
-main{max-width:900px;margin:35px auto;padding:0 16px}
-.player-card{background:white;padding:20px;border-radius:18px;box-shadow:0 8px 30px #25245b12}
-.video-area{background:#171725;border-radius:13px;overflow:hidden}
-video{width:100%;display:block;max-height:70vh;background:#111}
-.video-info{padding:5px 3px 12px}
-h1{font-size:23px;margin:20px 0 10px;color:#272744;line-height:1.4}
-.description{color:#74788b;font-size:15px;line-height:1.7;white-space:pre-wrap}
-.status{text-align:center;padding:55px 15px;color:#777b90;line-height:1.6}
-footer{text-align:center;color:#9295a8;padding:25px 15px;font-size:13px}
-@media(max-width:600px){
-main{margin:20px auto}
-.player-card{padding:12px;border-radius:14px}
-h1{font-size:20px}
+/* CSS Tambahan agar tata letak iklan rapi */
+.ad-container {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+.native-ad-wrap {
+  margin: 20px 0;
 }
 </style>
 </head>
 <body>
-<header>
-<div class="header-inner">
-<a href="/" class="logo">Video<span>Ku</span></a>
-</div>
+<header class="site-header">
+  <a class="brand" href="./">VideoKu</a>
+  <a class="admin-link" href="./admin.html">Admin</a>
 </header>
 
-<main>
-<section class="player-card">
-<div id="status" class="status">▶<br>Sedang memuat video...</div>
-<div class="video-area">
-<video id="video" controls playsinline preload="metadata" hidden></video>
-</div>
-<div class="video-info">
-<h1 id="title" hidden></h1>
-<p id="description" class="description" hidden></p>
-</div>
-</section>
+<main class="watch-wrap">
+  <section class="player-section">
+    <div class="featured-player">
+      <video id="mainVideo" controls playsinline preload="metadata"></video>
+      <div id="playerMessage" class="player-placeholder">
+        <div class="play-icon">▶</div>
+        <p>Pilih video untuk mulai menonton</p>
+      </div>
+    </div>
+    <h2 id="mainTitle" class="featured-title">Selamat datang di VideoKu</h2>
+    <p id="mainDescription" class="featured-description">Koleksi video pilihan kamu.</p>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 1. IKLAN BANNER IFRAME (728x90)            -->
+  <!-- ========================================== -->
+  <div class="ad-container">
+    <script>
+      atOptions = {
+        'key' : '489342048df66e3789ebbcf95f4a12e2',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    </script>
+    <script src="https://bancadeltempoidea.org/22/489342048df66e3789ebbcf95f4a12e2"></script>
+  </div>
+
+  <section class="collection-section">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">KOLEKSI</p>
+        <h2>Semua Video</h2>
+      </div>
+      <span id="videoCount" class="count-label">0 video</span>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. IKLAN NATIVE / CONTAINER                -->
+    <!-- ========================================== -->
+    <div class="native-ad-wrap">
+      <script async="async" data-cfasync="false" src="https://bancadeltempoidea.org/21/580538d6da5e19898741a77320afdabd"></script>
+      <div id="container-580538d6da5e19898741a77320afdabd"></div>
+    </div>
+
+    <div id="videoGrid" class="video-grid">
+      <p class="empty">Memuat video...</p>
+    </div>
+  </section>
 </main>
 
-<footer>VideoKu · Koleksi Video</footer>
+<footer class="footer">VideoKu · Koleksi Video</footer>
 
 <script>
 const SUPABASE_URL = "https://kbesxoueqynthvqtayww.supabase.co";
 const SUPABASE_KEY = "sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
-
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+const grid = document.getElementById("videoGrid");
+const player = document.getElementById("mainVideo");
+const message = document.getElementById("playerMessage");
+
+function pilihVideo(video) {
+  const url = db.storage.from("videos").getPublicUrl(video.storage_path).data.publicUrl;
+  player.src = url;
+  player.load();
+  message.style.display = "none";
+  document.getElementById("mainTitle").textContent = video.title || "Tanpa judul";
+  document.getElementById("mainDescription").textContent = video.description || "";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 async function muatVideo() {
-  const status = document.getElementById("status");
-  const video = document.getElementById("video");
+  grid.innerHTML = '<p class="empty">Memuat video...</p>';
+  const { data, error } = await db
+    .from("videos")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  const params = new URLSearchParams(location.search);
-  const parts = location.pathname.split("/").filter(Boolean);
-
-  let code = params.get("code") || "";
-
-  if (!code && parts.length >= 2 && parts[0].toLowerCase() === "e") {
-    code = parts[1];
-  }
-
-  code = code.toUpperCase();
-
-  if (!code || code.toLowerCase() === "index.html") {
-    status.textContent = "Link video tidak lengkap.";
+  if (error) {
+    grid.innerHTML = '<p class="empty">Gagal memuat video. Periksa pengaturan Supabase.</p>';
     return;
   }
 
-  try {
-    const { data, error } = await db
-      .from("videos")
-      .select("title, description, storage_path")
-      .eq("share_code", code)
-      .maybeSingle();
+  document.getElementById("videoCount").textContent = (data.length) + " video";
 
-    if (error) throw error;
-
-    if (!data) {
-      status.textContent = "Video tidak ditemukan atau link tidak valid.";
-      return;
-    }
-
-    const url = db.storage
-      .from("videos")
-      .getPublicUrl(data.storage_path).data.publicUrl;
-
-    video.src = url;
-    video.hidden = false;
-
-    document.getElementById("title").textContent = data.title || "Tanpa judul";
-    document.getElementById("title").hidden = false;
-
-    document.getElementById("description").textContent = data.description || "";
-    document.getElementById("description").hidden = false;
-
-    status.hidden = true;
-
-    video.addEventListener("error", () => {
-      status.hidden = false;
-      status.textContent = "Video gagal dimuat. Silakan coba lagi.";
-    });
-
-  } catch (err) {
-    console.error(err);
-    status.textContent = "Gagal memuat video. Silakan coba lagi.";
+  if (!data.length) {
+    grid.innerHTML = '<p class="empty">Belum ada video. Silakan tambahkan melalui halaman Admin.</p>';
+    return;
   }
+
+  grid.innerHTML = "";
+  data.forEach((video) => {
+    const card = document.createElement("button");
+    card.className = "video-card";
+    card.type = "button";
+
+    const thumb = document.createElement("div");
+    thumb.className = "thumb";
+    thumb.textContent = "▶";
+
+    const info = document.createElement("div");
+    info.className = "video-info";
+
+    const title = document.createElement("strong");
+    title.textContent = video.title || "Tanpa judul";
+
+    const description = document.createElement("span");
+    description.textContent = video.description || "VideoKu";
+
+    info.append(title, description);
+    card.append(thumb, info);
+    card.addEventListener("click", () => pilihVideo(video));
+    grid.appendChild(card);
+  });
+
+  pilihVideo(data.length ? data[0] : null);
 }
 
 muatVideo();
