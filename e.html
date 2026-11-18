@@ -38,10 +38,10 @@ const SUPABASE_KEY = "sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function muatVideo() {
-  const code = decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "").toUpperCase();
+  const code = new URLSearchParams(location.search).get("code")?.toUpperCase() || "";
   const status = document.getElementById("status");
 
-  if (!code || code === "E") {
+  if (!code) {
     status.textContent = "Link video tidak lengkap.";
     return;
   }
