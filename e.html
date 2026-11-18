@@ -38,10 +38,16 @@ const SUPABASE_KEY = "sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function muatVideo() {
-  const code = new URLSearchParams(location.search).get("code")?.toUpperCase() || "";
+  const params = new URLSearchParams(location.search);
+  const code = (
+    params.get("code") ||
+    location.pathname.split("/").filter(Boolean).pop() ||
+    ""
+  ).toUpperCase();
+
   const status = document.getElementById("status");
 
-  if (!code) {
+  if (!code || code.toLowerCase() === "e" || code.toLowerCase() === "e.html") {
     status.textContent = "Link video tidak lengkap.";
     return;
   }
