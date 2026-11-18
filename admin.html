@@ -71,6 +71,10 @@ const loginStatus = document.getElementById("loginStatus");
 const uploadStatus = document.getElementById("uploadStatus");
 const manageList = document.getElementById("manageList");
 
+function buatLink(code) {
+  return "https://cdn.aciemg.my.id/e.html?code=" + encodeURIComponent(code);
+}
+
 async function perbaruiTampilan() {
   const { data } = await db.auth.getSession();
   const session = data.session;
@@ -140,9 +144,9 @@ document.getElementById("uploadForm").addEventListener("submit", async (event) =
     return;
   }
 
-  const shareUrl = "https://cdn.aciemg.my.id/e/" + savedVideo.share_code;
+  const shareUrl = buatLink(savedVideo.share_code);
 
-  uploadStatus.textContent = "Video berhasil diunggah! Link penonton: ";
+  uploadStatus.textContent = "Video berhasil diunggah! Link penonton:";
 
   const link = document.createElement("a");
   link.href = shareUrl;
@@ -198,12 +202,11 @@ async function muatDaftar() {
 
     const name = document.createElement("strong");
     name.textContent = video.title || "Tanpa judul";
-
     item.appendChild(name);
 
     if (video.share_code) {
       const link = document.createElement("a");
-      link.href = "https://cdn.aciemg.my.id/e/" + video.share_code;
+      link.href = buatLink(video.share_code);
       link.textContent = "Buka Link Penonton";
       link.target = "_blank";
       link.rel = "noopener noreferrer";
