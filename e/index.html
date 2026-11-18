@@ -7,206 +7,118 @@
 <meta name="theme-color" content="#635bdb">
 <title>VideoKu — Tonton Video</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f3f4fb;
-  color: #202536;
-}
-
-header {
-  background: linear-gradient(135deg, #635bdb, #8178f2);
-  padding: 20px;
-  box-shadow: 0 4px 15px #635bdb33;
-}
-
-.header-inner {
-  max-width: 1000px;
-  margin: auto;
-}
-
-.logo {
-  color: white;
-  font-size: 25px;
-  font-weight: bold;
-  text-decoration: none;
-  letter-spacing: .3px;
-}
-
-.logo span {
-  color: #ffe58a;
-}
-
-main {
-  max-width: 900px;
-  margin: 35px auto;
-  padding: 0 16px;
-}
-
-.player-card {
-  background: white;
-  padding: 20px;
-  border-radius: 18px;
-  box-shadow: 0 8px 30px #25245b12;
-}
-
-.video-area {
-  background: #171725;
-  border-radius: 13px;
-  overflow: hidden;
-}
-
-video {
-  width: 100%;
-  display: block;
-  max-height: 70vh;
-  background: #111;
-}
-
-.video-info {
-  padding: 5px 3px 12px;
-}
-
-h1 {
-  font-size: 23px;
-  margin: 20px 0 10px;
-  color: #272744;
-  line-height: 1.4;
-}
-
-.description {
-  color: #74788b;
-  font-size: 15px;
-  line-height: 1.7;
-  white-space: pre-wrap;
-}
-
-.status {
-  text-align: center;
-  padding: 55px 15px;
-  color: #777b90;
-  line-height: 1.6;
-}
-
-.loading-icon {
-  font-size: 35px;
-  margin-bottom: 12px;
-}
-
-footer {
-  text-align: center;
-  color: #9295a8;
-  padding: 25px 15px;
-  font-size: 13px;
-}
-
-@media (max-width: 600px) {
-  main {
-    margin: 20px auto;
-  }
-
-  .player-card {
-    padding: 12px;
-    border-radius: 14px;
-  }
-
-  h1 {
-    font-size: 20px;
-  }
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f4fb;color:#202536}
+header{background:linear-gradient(135deg,#635bdb,#8178f2);padding:20px;box-shadow:0 4px 15px #635bdb33}
+.header-inner{max-width:1000px;margin:auto}
+.logo{color:white;font-size:25px;font-weight:bold;text-decoration:none}
+.logo span{color:#ffe58a}
+main{max-width:900px;margin:35px auto;padding:0 16px}
+.player-card{background:white;padding:20px;border-radius:18px;box-shadow:0 8px 30px #25245b12}
+.video-area{background:#171725;border-radius:13px;overflow:hidden}
+video{width:100%;display:block;max-height:70vh;background:#111}
+.video-info{padding:5px 3px 12px}
+h1{font-size:23px;margin:20px 0 10px;color:#272744;line-height:1.4}
+.description{color:#74788b;font-size:15px;line-height:1.7;white-space:pre-wrap}
+.status{text-align:center;padding:55px 15px;color:#777b90;line-height:1.6}
+footer{text-align:center;color:#9295a8;padding:25px 15px;font-size:13px}
+@media(max-width:600px){
+main{margin:20px auto}
+.player-card{padding:12px;border-radius:14px}
+h1{font-size:20px}
 }
 </style>
 </head>
-
 <body>
-
 <header>
-  <div class="header-inner">
-    <a href="/" class="logo">Video<span>Ku</span></a>
-  </div>
+<div class="header-inner">
+<a href="/" class="logo">Video<span>Ku</span></a>
+</div>
 </header>
 
 <main>
-  <section class="player-card">
-
-    <div id="status" class="status">
-      <div class="loading-icon">▶</div>
-      Sedang memuat video...
-    </div>
-
-    <div class="video-area">
-      <video id="video" controls playsinline preload="metadata" hidden></video>
-    </div>
-
-    <div class="video-info">
-      <h1 id="title" hidden></h1>
-      <p id="description" class="description" hidden></p>
-    </div>
-
-  </section>
+<section class="player-card">
+<div id="status" class="status">▶<br>Sedang memuat video...</div>
+<div class="video-area">
+<video id="video" controls playsinline preload="metadata" hidden></video>
+</div>
+<div class="video-info">
+<h1 id="title" hidden></h1>
+<p id="description" class="description" hidden></p>
+</div>
+</section>
 </main>
 
-<footer>
-  VideoKu · Koleksi Video
-</footer>
+<footer>VideoKu · Koleksi Video</footer>
 
 <script>
 const SUPABASE_URL = "https://kbesxoueqynthvqtayww.supabase.co";
 const SUPABASE_KEY = "sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function muatVideo() {
-  const parts = location.pathname.split("/").filter(Boolean);
-  const code = (parts.length > 1 ? parts[1] : "").toUpperCase();
-
   const status = document.getElementById("status");
+  const video = document.getElementById("video");
 
-  if (!code) {
+  const params = new URLSearchParams(location.search);
+  const parts = location.pathname.split("/").filter(Boolean);
+
+  let code = params.get("code") || "";
+
+  if (!code && parts.length >= 2 && parts[0].toLowerCase() === "e") {
+    code = parts[1];
+  }
+
+  code = code.toUpperCase();
+
+  if (!code || code.toLowerCase() === "index.html") {
     status.textContent = "Link video tidak lengkap.";
     return;
   }
 
-  const { data, error } = await db
-    .from("videos")
-    .select("title, description, storage_path")
-    .eq("share_code", code)
-    .maybeSingle();
+  try {
+    const { data, error } = await db
+      .from("videos")
+      .select("title, description, storage_path")
+      .eq("share_code", code)
+      .maybeSingle();
 
-  if (error || !data) {
-    status.textContent = "Video tidak ditemukan atau link tidak valid.";
-    return;
+    if (error) throw error;
+
+    if (!data) {
+      status.textContent = "Video tidak ditemukan atau link tidak valid.";
+      return;
+    }
+
+    const url = db.storage
+      .from("videos")
+      .getPublicUrl(data.storage_path).data.publicUrl;
+
+    video.src = url;
+    video.hidden = false;
+
+    document.getElementById("title").textContent = data.title || "Tanpa judul";
+    document.getElementById("title").hidden = false;
+
+    document.getElementById("description").textContent = data.description || "";
+    document.getElementById("description").hidden = false;
+
+    status.hidden = true;
+
+    video.addEventListener("error", () => {
+      status.hidden = false;
+      status.textContent = "Video gagal dimuat. Silakan coba lagi.";
+    });
+
+  } catch (err) {
+    console.error(err);
+    status.textContent = "Gagal memuat video. Silakan coba lagi.";
   }
-
-  const url = db.storage
-    .from("videos")
-    .getPublicUrl(data.storage_path).data.publicUrl;
-
-  const video = document.getElementById("video");
-  video.src = url;
-  video.hidden = false;
-
-  const title = document.getElementById("title");
-  title.textContent = data.title || "Tanpa judul";
-  title.hidden = false;
-
-  const description = document.getElementById("description");
-  description.textContent = data.description || "";
-  description.hidden = false;
-
-  status.hidden = true;
 }
 
 muatVideo();
 </script>
-
 </body>
 </html>
