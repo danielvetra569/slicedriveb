@@ -7,10 +7,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <!-- ========================================== -->
-<!-- 1 & 2. SKRIP IKLAN TAMBAHAN (DI BAGIAN HEAD)-->
+<!-- 1. SMARTLINK / POPUNDER (DI BAGIAN HEAD)   -->
 <!-- ========================================== -->
 <script data-cfasync="false" src="https://aarems.org/1/83cc953206f8c39205033005bd3e6c1a"></script>
-<script data-cfasync="false" src="https://bancadeltempoidea.org/14/0b6c94865d260b69f091b59cb66be542"></script>
 <!-- ========================================== -->
 
 <style>
@@ -26,15 +25,12 @@ p{color:#697386;line-height:1.6}
 .status{text-align:center;padding:35px 10px}
 footer{text-align:center;color:#8990a0;padding:30px}
 
-/* CSS Tambahan untuk Posisi Iklan */
+/* CSS Tambahan untuk Posisi Iklan Banner */
 .ad-container {
   margin: 20px 0;
   display: flex;
   justify-content: center;
   overflow-x: auto;
-}
-.native-ad-wrap {
-  margin: 20px 0;
 }
 </style>
 </head>
@@ -43,7 +39,7 @@ footer{text-align:center;color:#8990a0;padding:30px}
 <main>
 
   <!-- ========================================== -->
-  <!-- 3. IKLAN BANNER IFRAME (728x90)            -->
+  <!-- 2. IKLAN BANNER (728x90)                   -->
   <!-- ========================================== -->
   <div class="ad-container">
     <script>
@@ -65,14 +61,6 @@ footer{text-align:center;color:#8990a0;padding:30px}
     <p id="description" hidden></p>
   </section>
 
-  <!-- ========================================== -->
-  <!-- 4. IKLAN NATIVE / CONTAINER                -->
-  <!-- ========================================== -->
-  <div class="native-ad-wrap">
-    <script async="async" data-cfasync="false" src="https://bancadeltempoidea.org/21/580538d6da5e19898741a77320afdabd"></script>
-    <div id="container-580538d6da5e19898741a77320afdabd"></div>
-  </div>
-
 </main>
 <footer>VideoKu · Koleksi Video</footer>
 
@@ -82,16 +70,16 @@ const SUPABASE_KEY = "sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function muatVideo() {
-  const params = new URLSearchParams(location.search);
+  const pathSegments = location.pathname.split("/").filter(Boolean);
   const code = (
-    params.get("code") ||
-    location.pathname.split("/").filter(Boolean).pop() ||
+    new URLSearchParams(location.search).get("code") ||
+    pathSegments[pathSegments.length - 1] ||
     ""
   ).toUpperCase();
 
   const status = document.getElementById("status");
 
-  if (!code || code.toLowerCase() === "e" || code.toLowerCase() === "e.html") {
+  if (!code || code === "E" || code === "E.HTML" || code === "INDEX.HTML") {
     status.textContent = "Link video tidak lengkap.";
     return;
   }
