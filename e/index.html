@@ -12,7 +12,7 @@ body{margin:0;background:#f5f6fa;color:#202536;font-family:Arial,sans-serif}
 header{background:#fff;padding:18px 5%;box-shadow:0 2px 10px #0001}
 header a{font-size:23px;font-weight:bold;color:#635bdb;text-decoration:none}
 main{max-width:850px;margin:35px auto;padding:0 16px}
-.player{background:#fff;padding:18px;border-radius:14px;box-shadow:0 4px 20px #0000000d}
+.player{background:#fff;padding:18px;border-radius:14px}
 video{width:100%;background:#111;border-radius:10px;display:block;max-height:65vh}
 h1{font-size:23px;margin:20px 0 10px}
 p{color:#697386;line-height:1.6}
@@ -38,10 +38,11 @@ const SUPABASE_KEY = "sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function muatVideo() {
-  const code = decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "").toUpperCase();
+  const parts = location.pathname.split("/").filter(Boolean);
+  const code = (parts.length > 1 ? parts[1] : "").toUpperCase();
   const status = document.getElementById("status");
 
-  if (!code || code.toLowerCase() === "index.html") {
+  if (!code) {
     status.textContent = "Link video tidak lengkap.";
     return;
   }
@@ -58,17 +59,14 @@ async function muatVideo() {
   }
 
   const url = db.storage.from("videos").getPublicUrl(data.storage_path).data.publicUrl;
-
   const video = document.getElementById("video");
   video.src = url;
   video.hidden = false;
 
   document.getElementById("title").textContent = data.title || "Tanpa judul";
   document.getElementById("title").hidden = false;
-
   document.getElementById("description").textContent = data.description || "";
   document.getElementById("description").hidden = false;
-
   status.hidden = true;
 }
 
