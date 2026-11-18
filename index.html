@@ -1,1 +1,115 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VideoKu - Koleksi Video</title>
+<link rel="stylesheet" href="./style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="./">VideoKu</a>
+  <a class="admin-link" href="./admin.html">Admin</a>
+</header>
+
+<main class="watch-wrap">
+  <section class="player-section">
+    <div class="featured-player">
+      <video id="mainVideo" controls playsinline preload="metadata"></video>
+      <div id="playerMessage" class="player-placeholder">
+        <div class="play-icon">▶</div>
+        <p>Pilih video untuk mulai menonton</p>
+      </div>
+    </div>
+    <h2 id="mainTitle" class="featured-title">Selamat datang di VideoKu</h2>
+    <p id="mainDescription" class="featured-description">Koleksi video pilihan kamu.</p>
+  </section>
+
+  <section class="collection-section">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">KOLEKSI</p>
+        <h2>Semua Video</h2>
+      </div>
+      <span id="videoCount" class="count-label">0 video</span>
+    </div>
+    <div id="videoGrid" class="video-grid">
+      <p class="empty">Memuat video...</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">VideoKu · Koleksi Video</footer>
+
+<script>
+const SUPABASE_URL = "https://kbesxoueqynthvqtayww.supabase.co";
+const SUPABASE_KEY = "sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const grid = document.getElementById("videoGrid");
+const player = document.getElementById("mainVideo");
+const message = document.getElementById("playerMessage");
+
+function pilihVideo(video) {
+  const url = db.storage.from("videos").getPublicUrl(video.storage_path).data.publicUrl;
+  player.src = url;
+  player.load();
+  message.style.display = "none";
+  document.getElementById("mainTitle").textContent = video.title || "Tanpa judul";
+  document.getElementById("mainDescription").textContent = video.description || "";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+async function muatVideo() {
+  grid.innerHTML = '<p class="empty">Memuat video...</p>';
+  const { data, error } = await db
+    .from("videos")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    grid.innerHTML = '<p class="empty">Gagal memuat video. Periksa pengaturan Supabase.</p>';
+    return;
+  }
+
+  document.getElementById("videoCount").textContent = (data.length) + " video";
+
+  if (!data.length) {
+    grid.innerHTML = '<p class="empty">Belum ada video. Silakan tambahkan melalui halaman Admin.</p>';
+    return;
+  }
+
+  grid.innerHTML = "";
+  data.forEach((video) => {
+    const card = document.createElement("button");
+    card.className = "video-card";
+    card.type = "button";
+
+    const thumb = document.createElement("div");
+    thumb.className = "thumb";
+    thumb.textContent = "▶";
+
+    const info = document.createElement("div");
+    info.className = "video-info";
+
+    const title = document.createElement("strong");
+    title.textContent = video.title || "Tanpa judul";
+
+    const description = document.createElement("span");
+    description.textContent = video.description || "VideoKu";
+
+    info.append(title, description);
+    card.append(thumb, info);
+    card.addEventListener("click", () => pilihVideo(video));
+    grid.appendChild(card);
+  });
+
+  pilihVideo(data[0]);
+}
+
+muatVideo();
+</script>
+</body>
+</html>
