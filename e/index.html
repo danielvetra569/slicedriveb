@@ -4,33 +4,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#635bdb">
+<meta name="theme-color" content="#facc15">
 <title>VideoKu - Tonton Video</title>
 
 <link rel="stylesheet" href="../style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-.ad-container {
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;
-  overflow-x: auto;
+body {
+  margin: 0;
+  background: #fffbea !important;
+  color: #29230b !important;
+  font-family: Arial, sans-serif;
 }
-.ad-container iframe {
-  max-width: 100%;
+
+.site-header {
+  background: linear-gradient(120deg,#eab308,#facc15) !important;
+  color: #29230b !important;
+  padding: 18px 20px;
 }
+
+.brand {
+  color: #29230b !important;
+  font-size: 23px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
 .watch-wrap {
   max-width: 900px;
   margin: 30px auto;
   padding: 0 16px;
 }
+
 .player-section {
-  background: white;
+  background: #fff !important;
+  border: 2px solid #facc15;
   padding: 18px;
   border-radius: 16px;
   box-shadow: 0 5px 20px #00000010;
 }
+
 .featured-player {
   position: relative;
   background: #111;
@@ -38,29 +52,52 @@
   overflow: hidden;
   min-height: 220px;
 }
+
 .featured-player video {
   display: block;
   width: 100%;
   max-height: 70vh;
   background: #111;
 }
+
 .player-placeholder {
   color: white;
   text-align: center;
   padding: 45px 15px;
 }
+
 .play-icon {
   font-size: 38px;
-  color: #a69fff;
+  color: #facc15;
 }
+
 .featured-title {
-  color: #29264f;
+  color: #29230b !important;
   margin-top: 20px;
 }
+
 .featured-description {
-  color: #74788b;
+  color: #746b50 !important;
   line-height: 1.6;
 }
+
+.ad-container {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.ad-container iframe {
+  max-width: 100%;
+}
+
+.footer {
+  text-align: center;
+  color: #8a7a4a !important;
+  padding: 25px 10px;
+}
+
 @media(max-width:600px) {
   .player-section {
     padding: 12px;
@@ -122,7 +159,6 @@ async function muatVideo() {
   const params = new URLSearchParams(location.search);
   const parts = location.pathname.split("/").filter(Boolean);
 
-  // Ambil kode dari link lama atau link pendek
   let code = params.get("code") || "";
 
   if (!code && parts[0]?.toLowerCase() === "e") {
