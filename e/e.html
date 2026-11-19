@@ -4,66 +4,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#635bdb">
+<meta name="theme-color" content="#6554db">
 <title>VideoKu - Tonton Video</title>
 
-<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="./style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-.ad-container {
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;
-  overflow-x: auto;
-}
-.ad-container iframe {
-  max-width: 100%;
-}
 .watch-wrap {
-  max-width: 900px;
+  max-width: 850px;
   margin: 30px auto;
-  padding: 0 16px;
 }
 .player-section {
-  background: white;
   padding: 18px;
-  border-radius: 16px;
-  box-shadow: 0 5px 20px #00000010;
 }
 .featured-player {
-  position: relative;
+  max-width: 460px;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  margin: auto;
   background: #111;
-  border-radius: 12px;
+  border-radius: 13px;
   overflow: hidden;
-  min-height: 220px;
+  position: relative;
 }
 .featured-player video {
-  display: block;
   width: 100%;
-  max-height: 70vh;
+  height: 100%;
+  object-fit: contain;
   background: #111;
 }
 .player-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
-  text-align: center;
-  padding: 45px 15px;
-}
-.play-icon {
-  font-size: 38px;
-  color: #a69fff;
+  pointer-events: none;
 }
 .featured-title {
-  color: #29264f;
-  margin-top: 20px;
-}
-.featured-description {
-  color: #74788b;
-  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 @media(max-width:600px) {
-  .player-section {
-    padding: 12px;
+  .watch-wrap {
+    margin: 15px auto;
   }
 }
 </style>
@@ -73,45 +58,43 @@
 
 <header class="site-header">
   <a class="brand" href="/">VideoKu</a>
+  <a class="admin-link" href="/admin.html">Admin</a>
 </header>
 
 <main class="watch-wrap">
-<section class="player-section">
+  <section class="player-section">
 
-  <div class="featured-player">
-    <video id="mainVideo" controls playsinline preload="metadata" hidden></video>
+    <div class="featured-player">
+      <video id="mainVideo"
+        controls
+        playsinline
+        preload="metadata">
+      </video>
 
-    <div id="playerMessage" class="player-placeholder">
-      <div class="play-icon">▶</div>
-      <p>Sedang memuat video...</p>
+      <div id="playerMessage" class="player-placeholder">
+        Memuat video...
+      </div>
     </div>
-  </div>
 
-  <h2 id="mainTitle" class="featured-title">VideoKu</h2>
-  <p id="mainDescription" class="featured-description"></p>
+    <h2 id="mainTitle" class="featured-title">
+      VideoKu
+    </h2>
 
-</section>
+    <p id="mainDescription" class="featured-description"></p>
 
-<div class="ad-container">
-  <script>
-    atOptions = {
-      'key': '489342048df66e3789ebbcf95f4a12e2',
-      'format': 'iframe',
-      'height': 90,
-      'width': 728,
-      'params': {}
-    };
-  </script>
-  <script src="https://bancadeltempoidea.org/22/489342048df66e3789ebbcf95f4a12e2"></script>
-</div>
-
+  </section>
 </main>
 
-<footer class="footer">VideoKu · Koleksi Video</footer>
+<footer class="footer">
+  VideoKu · Koleksi Video
+</footer>
 
 <script>
-const SUPABASE_URL = "https://kbesxoueqynthvqtayww.supabase.co";
-const SUPABASE_KEY = "sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
+const SUPABASE_URL =
+"https://kbesxoueqynthvqtayww.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
 
 const db = window.supabase.createClient(
   SUPABASE_URL,
@@ -120,22 +103,25 @@ const db = window.supabase.createClient(
 
 async function muatVideo() {
   const params = new URLSearchParams(location.search);
-  const parts = location.pathname.split("/").filter(Boolean);
 
-  // Ambil kode dari link lama atau link pendek
-  let code = params.get("code") || "";
+  const parts = location.pathname
+    .split("/")
+    .filter(Boolean);
 
-  if (!code && parts[0]?.toLowerCase() === "e") {
-    code = parts[1] || "";
-  }
+  let code =
+    params.get("code") ||
+    (parts[0]?.toLowerCase() === "e"
+      ? parts[1]
+      : parts[parts.length - 1]) ||
+    "";
 
   code = decodeURIComponent(code).trim().toUpperCase();
 
   const message = document.getElementById("playerMessage");
-  const video = document.getElementById("mainVideo");
+  const player = document.getElementById("mainVideo");
 
-  if (!code || code.toLowerCase() === "index.html") {
-    message.innerHTML = "<p>Link video tidak lengkap.</p>";
+  if (!code || code === "E.HTML") {
+    message.textContent = "Link video tidak lengkap.";
     return;
   }
 
@@ -149,7 +135,7 @@ async function muatVideo() {
     if (error) throw error;
 
     if (!data) {
-      message.innerHTML = "<p>Video tidak ditemukan atau link tidak valid.</p>";
+      message.textContent = "Video tidak ditemukan.";
       return;
     }
 
@@ -157,11 +143,12 @@ async function muatVideo() {
       .from("videos")
       .getPublicUrl(data.storage_path);
 
-    const url = result.data.publicUrl;
+    if (!result.data.publicUrl) {
+      throw new Error("URL video tidak tersedia");
+    }
 
-    video.src = url;
-    video.hidden = false;
-    video.load();
+    player.src = result.data.publicUrl;
+    player.load();
 
     document.getElementById("mainTitle").textContent =
       data.title || "Tanpa judul";
@@ -171,14 +158,14 @@ async function muatVideo() {
 
     message.style.display = "none";
 
-    video.addEventListener("error", () => {
-      message.style.display = "block";
-      message.innerHTML = "<p>Video gagal dimuat.</p>";
+    player.addEventListener("error", () => {
+      message.style.display = "flex";
+      message.textContent = "Video gagal dimuat. Silakan coba lagi.";
     });
 
-  } catch (error) {
-    console.error(error);
-    message.innerHTML = "<p>Gagal memuat video. Silakan coba lagi.</p>";
+  } catch (err) {
+    console.error(err);
+    message.textContent = "Gagal memuat video. Silakan coba lagi.";
   }
 }
 
