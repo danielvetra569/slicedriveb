@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#635bdb">
+<meta name="theme-color" content="#facc15">
 <title>VideoKu - Tonton Video</title>
 
 <link rel="stylesheet" href="./style.css">
@@ -13,39 +13,47 @@
 <style>
 body {
   margin: 0;
-  background: #f5f6fc;
-  color: #25243a;
+  background: #fffbea !important;
+  color: #29230b !important;
   font-family: Arial, sans-serif;
 }
+
 .site-header {
-  background: linear-gradient(120deg,#635bdb,#8275ed);
-  color: white;
+  background: linear-gradient(120deg,#eab308,#facc15) !important;
+  color: #29230b !important;
   padding: 18px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .brand {
-  color: white;
+  color: #29230b !important;
   font-size: 23px;
   font-weight: bold;
   text-decoration: none;
 }
+
 .admin-link {
-  color: white;
+  color: #29230b !important;
   text-decoration: none;
+  font-weight: bold;
 }
+
 .watch-wrap {
   max-width: 850px;
   margin: 28px auto;
   padding: 0 14px;
 }
+
 .player-section {
-  background: white;
+  background: #ffffff !important;
+  border: 2px solid #facc15;
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 5px 22px rgba(30,25,90,.08);
+  box-shadow: 0 5px 22px rgba(120,90,0,.10);
 }
+
 .featured-player {
   width: 100%;
   max-width: 460px;
@@ -55,32 +63,39 @@ body {
   border-radius: 12px;
   overflow: hidden;
 }
+
 .featured-player video {
   width: 100%;
   height: 100%;
   object-fit: contain;
   background: #111;
 }
+
 .featured-title {
   font-size: 21px;
   margin: 20px 0 8px;
   overflow-wrap: anywhere;
+  color: #29230b;
 }
+
 .featured-description {
-  color: #68677a;
+  color: #6b6250;
   line-height: 1.6;
   white-space: pre-wrap;
 }
+
 .status {
   text-align: center;
   padding: 15px;
-  color: #635bdb;
+  color: #a16207;
 }
+
 .footer {
   text-align: center;
-  color: #777;
+  color: #8a7a4a;
   padding: 25px 10px;
 }
+
 @media(max-width:600px) {
   .watch-wrap { margin: 15px auto; }
   .player-section { padding: 12px; }
