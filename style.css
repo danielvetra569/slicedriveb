@@ -5,8 +5,8 @@
 
 body {
   margin: 0;
-  background: #f5f6fa;
-  color: #202331;
+  background: #fffbea;
+  color: #29230b;
   font-family: Arial, sans-serif;
 }
 
@@ -16,26 +16,26 @@ a {
 }
 
 .site-header {
-  height: 65px;
+  min-height: 65px;
   padding: 0 6%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: white;
-  border-bottom: 1px solid #e9eaf0;
+  background: #facc15;
+  border-bottom: 1px solid #eab308;
 }
 
 .brand {
   font-size: 24px;
   font-weight: 800;
-  color: #6554db;
+  color: #29230b;
 }
 
 .admin-link {
   padding: 10px 17px;
   border-radius: 9px;
-  background: #f0edff;
-  color: #6554db;
+  background: #fff3b0;
+  color: #713f12;
   font-weight: bold;
 }
 
@@ -48,6 +48,7 @@ a {
 .player-section {
   background: white;
   padding: 18px;
+  border: 2px solid #facc15;
   border-radius: 16px;
   box-shadow: 0 5px 25px #2023310c;
 }
@@ -90,7 +91,7 @@ a {
   width: 65px;
   height: 65px;
   border-radius: 50%;
-  background: #6554db;
+  background: #eab308;
   display: grid;
   place-items: center;
   font-size: 25px;
@@ -99,11 +100,12 @@ a {
 .featured-title {
   margin: 20px 0 8px;
   font-size: 22px;
+  color: #29230b;
 }
 
 .featured-description,
 .muted {
-  color: #777b89;
+  color: #77704f;
   line-height: 1.6;
 }
 
@@ -119,7 +121,7 @@ a {
 }
 
 .eyebrow {
-  color: #6554db;
+  color: #a16207;
   font-size: 11px;
   font-weight: bold;
   letter-spacing: 2px;
@@ -132,7 +134,7 @@ a {
 }
 
 .count-label {
-  color: #777b89;
+  color: #77704f;
   font-size: 13px;
 }
 
@@ -144,7 +146,7 @@ a {
 
 .video-card {
   text-align: left;
-  border: 0;
+  border: 1px solid #facc15;
   background: white;
   border-radius: 13px;
   padding: 0;
@@ -156,7 +158,7 @@ a {
 
 .thumb {
   aspect-ratio: 9 / 12;
-  background: #25233b;
+  background: #a16207;
   color: white;
   display: grid;
   place-items: center;
@@ -176,20 +178,20 @@ a {
 
 .video-info span {
   font-size: 12px;
-  color: #858895;
+  color: #85806b;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .empty {
-  color: #777b89;
+  color: #77704f;
   padding: 20px 0;
 }
 
 .footer {
   text-align: center;
   padding: 30px;
-  color: #9295a0;
+  color: #8a7a4a;
   font-size: 13px;
 }
 
@@ -209,6 +211,7 @@ a {
 
 .panel {
   background: white;
+  border: 1px solid #facc15;
   border-radius: 15px;
   padding: 22px;
   margin-bottom: 20px;
@@ -231,7 +234,7 @@ a {
 .panel textarea {
   width: 100%;
   padding: 13px;
-  border: 1px solid #dedfe7;
+  border: 1px solid #e8d58a;
   border-radius: 9px;
   font: inherit;
   background: white;
@@ -240,8 +243,8 @@ a {
 .primary-button {
   border: 0;
   padding: 14px;
-  background: #6554db;
-  color: white;
+  background: #eab308;
+  color: #29230b;
   border-radius: 9px;
   font-weight: bold;
   cursor: pointer;
@@ -257,8 +260,8 @@ a {
 }
 
 .secondary {
-  background: #eeeaff;
-  color: #6554db;
+  background: #fff3b0;
+  color: #713f12;
 }
 
 .danger {
@@ -274,7 +277,7 @@ a {
 }
 
 .status {
-  color: #6554db;
+  color: #a16207;
   font-size: 13px;
   overflow-wrap: anywhere;
 }
@@ -292,7 +295,7 @@ a {
   justify-content: space-between;
   gap: 12px;
   padding: 12px;
-  background: #f7f7fa;
+  background: #fffbea;
   border-radius: 9px;
 }
 
