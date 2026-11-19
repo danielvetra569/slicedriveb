@@ -115,35 +115,39 @@ body {
 <footer class="footer">VideoKu</footer>
 
 <script>
-const SUPABASE_URL =
-  "https://kbesxoueqynthvqtayww.supabase.co";
+const SUPABASE_URL = "https://kbesxoueqynthvqtayww.supabase.co";
+const SUPABASE_KEY = "sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
 
-const SUPABASE_KEY =
-  "sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
-
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const statusBox = document.getElementById("status");
+const video = document.getElementById("mainVideo");
 
 async function loadVideo() {
-  const params = new URLSearchParams(location.search);
-
-  const code = (
-    params.get("code") ||
-    location.pathname.split("/").filter(Boolean).pop() ||
-    ""
-  ).trim().toUpperCase();
-
-  const status = document.getElementById("status");
-  const video = document.getElementById("mainVideo");
-
-  if (!code || code.toLowerCase() === "e.html") {
-    status.textContent = "Link video tidak lengkap.";
-    return;
-  }
-
   try {
+    if (!window.supabase) {
+      throw new Error("Library Supabase gagal dimuat.");
+    }
+
+    const db = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const params = new URLSearchParams(location.search);
+    const parts = location.pathname.split("/").filter(Boolean);
+
+    let code = params.get("code") || "";
+
+    if (!code && parts[0]?.toLowerCase() === "e") {
+      code = parts[1] || "";
+    }
+
+    code = decodeURIComponent(code).trim().toUpperCase();
+
+    if (!code) {
+      statusBox.textContent = "Link video tidak lengkap.";
+      return;
+    }
+
     const { data, error } = await db
       .from("videos")
       .select("title, description, storage_path")
@@ -153,7 +157,7 @@ async function loadVideo() {
     if (error) throw error;
 
     if (!data) {
-      status.textContent = "Video tidak ditemukan.";
+      statusBox.textContent = "Video tidak ditemukan.";
       return;
     }
 
@@ -161,7 +165,7 @@ async function loadVideo() {
       .from("videos")
       .getPublicUrl(data.storage_path);
 
-    if (!publicData || !publicData.publicUrl) {
+    if (!publicData?.publicUrl) {
       throw new Error("Alamat video tidak tersedia.");
     }
 
@@ -174,19 +178,20 @@ async function loadVideo() {
     video.src = publicData.publicUrl;
     video.load();
 
-    status.textContent = "Video berhasil dimuat.";
+    statusBox.textContent = "Video berhasil dimuat. Tekan tombol putar.";
+
     video.addEventListener("loadedmetadata", () => {
-      status.style.display = "none";
+      statusBox.style.display = "none";
     }, { once: true });
 
     video.addEventListener("error", () => {
-      status.style.display = "block";
-      status.textContent = "Video gagal diputar. Silakan coba lagi.";
+      statusBox.style.display = "block";
+      statusBox.textContent = "Video gagal diputar.";
     });
 
   } catch (error) {
-    console.error(error);
-    status.textContent = "Gagal memuat video. Silakan coba lagi.";
+    console.error("VideoKu:", error);
+    statusBox.textContent = error.message || "Gagal memuat video.";
   }
 }
 
