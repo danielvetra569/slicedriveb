@@ -7,26 +7,29 @@
 <meta name="theme-color" content="#facc15">
 <title>VideoKu - Tonton Video</title>
 
-<link rel="stylesheet" href="../style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  background: #fffbea !important;
-  color: #29230b !important;
+  background: #fff8dc !important;
+  color: #29230b;
   font-family: Arial, sans-serif;
 }
 
 .site-header {
-  background: linear-gradient(120deg,#eab308,#facc15) !important;
-  color: #29230b !important;
-  padding: 18px 20px;
+  background: #facc15 !important;
+  padding: 20px;
+  color: #29230b;
 }
 
 .brand {
   color: #29230b !important;
-  font-size: 23px;
+  font-size: 24px;
   font-weight: bold;
   text-decoration: none;
 }
@@ -39,14 +42,13 @@ body {
 
 .player-section {
   background: #fff !important;
-  border: 2px solid #facc15;
-  padding: 18px;
+  border: 3px solid #facc15;
   border-radius: 16px;
+  padding: 18px;
   box-shadow: 0 5px 20px #00000010;
 }
 
 .featured-player {
-  position: relative;
   background: #111;
   border-radius: 12px;
   overflow: hidden;
@@ -72,13 +74,14 @@ body {
 }
 
 .featured-title {
-  color: #29230b !important;
+  color: #29230b;
   margin-top: 20px;
 }
 
 .featured-description {
-  color: #746b50 !important;
+  color: #746b50;
   line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 .ad-container {
@@ -88,13 +91,9 @@ body {
   overflow-x: auto;
 }
 
-.ad-container iframe {
-  max-width: 100%;
-}
-
 .footer {
   text-align: center;
-  color: #8a7a4a !important;
+  color: #8a7a4a;
   padding: 25px 10px;
 }
 
@@ -128,20 +127,6 @@ body {
   <p id="mainDescription" class="featured-description"></p>
 
 </section>
-
-<div class="ad-container">
-  <script>
-    atOptions = {
-      'key': '489342048df66e3789ebbcf95f4a12e2',
-      'format': 'iframe',
-      'height': 90,
-      'width': 728,
-      'params': {}
-    };
-  </script>
-  <script src="https://bancadeltempoidea.org/22/489342048df66e3789ebbcf95f4a12e2"></script>
-</div>
-
 </main>
 
 <footer class="footer">VideoKu · Koleksi Video</footer>
@@ -185,7 +170,7 @@ async function muatVideo() {
     if (error) throw error;
 
     if (!data) {
-      message.innerHTML = "<p>Video tidak ditemukan atau link tidak valid.</p>";
+      message.innerHTML = "<p>Video tidak ditemukan.</p>";
       return;
     }
 
@@ -193,9 +178,7 @@ async function muatVideo() {
       .from("videos")
       .getPublicUrl(data.storage_path);
 
-    const url = result.data.publicUrl;
-
-    video.src = url;
+    video.src = result.data.publicUrl;
     video.hidden = false;
     video.load();
 
@@ -214,7 +197,7 @@ async function muatVideo() {
 
   } catch (error) {
     console.error(error);
-    message.innerHTML = "<p>Gagal memuat video. Silakan coba lagi.</p>";
+    message.innerHTML = "<p>Gagal memuat video.</p>";
   }
 }
 
