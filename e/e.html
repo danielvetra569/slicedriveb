@@ -1,216 +1,153 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#facc15">
+<meta name="theme-color" content="#635bdb">
 <title>VideoKu - Tonton Video</title>
 
-<link rel="stylesheet" href="./style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- SMARTLINK / POPUNDER -->
+<script data-cfasync="false" src="https://aarems.org/1/83cc953206f8c39205033005bd3e6c1a"></script>
+
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  background: #fffbea !important;
-  color: #29230b !important;
+  background: #f5f6fa;
+  color: #202331;
   font-family: Arial, sans-serif;
 }
 
-.site-header {
-  background: linear-gradient(120deg,#eab308,#facc15) !important;
-  color: #29230b !important;
-  padding: 18px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.brand {
-  color: #29230b !important;
-  font-size: 23px;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.admin-link {
-  color: #29230b !important;
-  text-decoration: none;
+header {
+  background: #635bdb;
+  color: white;
+  padding: 18px;
+  font-size: 21px;
   font-weight: bold;
 }
 
-.watch-wrap {
-  max-width: 850px;
-  margin: 28px auto;
+.container {
+  max-width: 900px;
+  margin: 20px auto;
   padding: 0 14px;
 }
 
-.player-section {
-  background: #ffffff !important;
-  border: 2px solid #facc15;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 5px 22px rgba(120,90,0,.10);
-}
-
-.featured-player {
-  width: 100%;
-  max-width: 460px;
-  aspect-ratio: 9 / 16;
-  margin: auto;
-  background: #111;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.featured-player video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background: #111;
-}
-
-.featured-title {
-  font-size: 21px;
-  margin: 20px 0 8px;
-  overflow-wrap: anywhere;
-  color: #29230b;
-}
-
-.featured-description {
-  color: #6b6250;
-  line-height: 1.6;
-  white-space: pre-wrap;
-}
-
-.status {
-  text-align: center;
+.ad-smartlink {
+  margin-top: 18px;
   padding: 15px;
-  color: #a16207;
-}
-
-.footer {
+  background: #fff;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
   text-align: center;
-  color: #8a7a4a;
-  padding: 25px 10px;
+  color: #888;
+  font-size: 13px;
 }
 
-@media(max-width:600px) {
-  .watch-wrap { margin: 15px auto; }
-  .player-section { padding: 12px; }
+.video-box {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+video {
+  width: 100%;
+  display: block;
+  background: #000;
+  border-radius: 8px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+#status {
+  text-align: center;
+  padding: 25px;
 }
 </style>
 </head>
 
 <body>
 
-<header class="site-header">
-  <a class="brand" href="/">VideoKu</a>
-  <a class="admin-link" href="/admin.html">Admin</a>
-</header>
+<header>VideoKu</header>
 
-<main class="watch-wrap">
-  <section class="player-section">
+<div class="container">
 
-    <div id="status" class="status">Memuat video...</div>
+  <div id="status">Memuat video...</div>
 
-    <div class="featured-player">
-      <video id="mainVideo" controls playsinline preload="metadata">
-        Browser tidak mendukung pemutar video.
-      </video>
+  <div class="video-box" id="videoBox" hidden>
+    <video id="player" controls playsinline></video>
+    <h2 id="videoTitle"></h2>
+    <p id="videoDescription"></p>
+  </div>
+
+  <!-- NATIVE BANNER & SMARTLINK -->
+  <div class="ad-smartlink">
+    <script async="async" data-cfasync="false" src="https://bancadeltempoidea.org/21/580538d6da5e19898741a77320afdabd"></script>
+    <div id="container-580538d6da5e19898741a77320afdabd"></div>
+    <div style="margin-top: 10px;">
+      <a href="https://aarems.org/1/83cc953206f8c39205033005bd3e6c1a" target="_blank" rel="noopener noreferrer">Lihat Info &amp; Penawaran</a>
     </div>
+  </div>
 
-    <h2 id="mainTitle" class="featured-title">VideoKu</h2>
-    <p id="mainDescription" class="featured-description"></p>
-
-  </section>
-</main>
-
-<footer class="footer">VideoKu</footer>
+</div>
 
 <script>
 const SUPABASE_URL = "https://kbesxoueqynthvqtayww.supabase.co";
 const SUPABASE_KEY = "sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
 
-const statusBox = document.getElementById("status");
-const video = document.getElementById("mainVideo");
+const db = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-async function loadVideo() {
-  try {
-    if (!window.supabase) {
-      throw new Error("Library Supabase gagal dimuat.");
-    }
+async function tampilkanVideo() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
 
-    const db = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+  const status = document.getElementById("status");
 
-    const params = new URLSearchParams(location.search);
-    const parts = location.pathname.split("/").filter(Boolean);
-
-    let code = params.get("code") || "";
-
-    if (!code && parts[0]?.toLowerCase() === "e") {
-      code = parts[1] || "";
-    }
-
-    code = decodeURIComponent(code).trim().toUpperCase();
-
-    if (!code) {
-      statusBox.textContent = "Link video tidak lengkap.";
-      return;
-    }
-
-    const { data, error } = await db
-      .from("videos")
-      .select("title, description, storage_path")
-      .eq("share_code", code)
-      .maybeSingle();
-
-    if (error) throw error;
-
-    if (!data) {
-      statusBox.textContent = "Video tidak ditemukan.";
-      return;
-    }
-
-    const { data: publicData } = db.storage
-      .from("videos")
-      .getPublicUrl(data.storage_path);
-
-    if (!publicData?.publicUrl) {
-      throw new Error("Alamat video tidak tersedia.");
-    }
-
-    document.getElementById("mainTitle").textContent =
-      data.title || "Tanpa judul";
-
-    document.getElementById("mainDescription").textContent =
-      data.description || "";
-
-    video.src = publicData.publicUrl;
-    video.load();
-
-    statusBox.textContent = "Video berhasil dimuat. Tekan tombol putar.";
-
-    video.addEventListener("loadedmetadata", () => {
-      statusBox.style.display = "none";
-    }, { once: true });
-
-    video.addEventListener("error", () => {
-      statusBox.style.display = "block";
-      statusBox.textContent = "Video gagal diputar.";
-    });
-
-  } catch (error) {
-    console.error("VideoKu:", error);
-    statusBox.textContent = error.message || "Gagal memuat video.";
+  if (!code) {
+    status.textContent = "Link video tidak valid.";
+    return;
   }
+
+  const { data, error } = await db
+    .from("videos")
+    .select("title, description, storage_path")
+    .eq("share_code", code)
+    .maybeSingle();
+
+  if (error) {
+    status.textContent = "Gagal mengambil video.";
+    console.error(error);
+    return;
+  }
+
+  if (!data) {
+    status.textContent = "Video tidak ditemukan.";
+    return;
+  }
+
+  const { data: fileData } = db.storage
+    .from("videos")
+    .getPublicUrl(data.storage_path);
+
+  document.getElementById("player").src = fileData.publicUrl;
+  document.getElementById("videoTitle").textContent = data.title || "";
+  document.getElementById("videoDescription").textContent =
+    data.description || "";
+
+  document.getElementById("videoBox").hidden = false;
+  status.hidden = true;
 }
 
-loadVideo();
+tampilkanVideo();
 </script>
 
 </body>
