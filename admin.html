@@ -13,6 +13,7 @@ h2{color:#635bdb}
 input,textarea{width:100%;padding:13px;margin:8px 0 15px;border:1px solid #ccc;border-radius:7px;font-size:15px}
 textarea{min-height:80px}
 button{width:100%;padding:14px;background:#635bdb;color:white;border:0;border-radius:7px;font-size:16px;cursor:pointer}
+button:disabled{opacity:.6}
 #hasil{margin-top:18px;overflow-wrap:anywhere}
 a{color:#635bdb}
 #status{margin-top:15px}
@@ -23,19 +24,18 @@ a{color:#635bdb}
 <h2>VideoKu Admin</h2>
 
 <label>Password Admin</label>
-<input type="password" id="password" placeholder="Masukkan password admin">
+<input type="password" id="password" placeholder="Password admin">
 
 <label>Judul Video</label>
-<input id="title" placeholder="Masukkan judul video">
+<input id="title" placeholder="Judul video">
 
 <label>Deskripsi</label>
 <textarea id="description" placeholder="Deskripsi video (boleh kosong)"></textarea>
 
 <label>URL Video AceImg</label>
-<input id="url" placeholder="https://cdn.aceimg.com/contoh.mp4">
+<input id="url" placeholder="https://aceimg.com/contoh.mp4">
 
 <button id="saveButton" onclick="simpanVideo()">Simpan Video</button>
-
 <div id="status"></div>
 <div id="hasil"></div>
 </div>
@@ -50,18 +50,16 @@ async function simpanVideo(){
   const hasil=document.getElementById("hasil");
   const button=document.getElementById("saveButton");
 
-  hasil.innerHTML="";
+  hasil.textContent="";
 
   if(!password||!title||!url){
-    status.textContent="Isi password, judul, dan URL video terlebih dahulu.";
+    status.textContent="Isi password, judul, dan URL video.";
     return;
   }
 
   let parsed;
-  try{
-    parsed=new URL(url);
-  }catch(e){
-    status.textContent="URL video tidak valid.";
+  try{parsed=new URL(url)}catch(e){
+    status.textContent="URL tidak valid.";
     return;
   }
 
@@ -74,7 +72,6 @@ async function simpanVideo(){
     .map(x=>x.toString(16).padStart(2,"0")).join("").toUpperCase();
 
   button.disabled=true;
-  button.textContent="Menyimpan...";
   status.textContent="Sedang menyimpan video...";
 
   try{
@@ -82,42 +79,34 @@ async function simpanVideo(){
       "https://hidden-recipe-88ca.danielvetra569.workers.dev/add-video",
       {
         method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "X-Admin-Password":password
-        },
-        body:JSON.stringify({code,title,description,url})
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({password,code,title,description,url})
       }
     );
 
     const result=await response.json();
 
     if(!response.ok||!result.success){
-      throw new Error(result.error||"Gagal menyimpan video.");
+      throw new Error(result.error+
+        (result.status?" (HTTP "+result.status+")":"")+
+        (result.detail?" — "+result.detail:""));
     }
 
     const link="https://cdn.aciemg.my.id/e.html?code="+code;
-
     status.textContent="Video berhasil disimpan!";
-    hasil.innerHTML=
-      "<p><b>Kode:</b> "+code+"</p>"+
-      "<p><b>Link penonton:</b><br><a href='"+link+"' target='_blank'>"+link+"</a></p>"+
-      "<button onclick='salinLink()'>Salin Link Penonton</button>";
+    hasil.innerHTML="<p><b>Kode:</b> "+code+"</p><p><b>Link penonton:</b><br><a href='"+link+"' target='_blank'>"+link+"</a></p>";
 
-    window.linkVideoKu=link;
+    const copy=document.createElement("button");
+    copy.textContent="Salin Link Penonton";
+    copy.onclick=()=>navigator.clipboard.writeText(link).then(
+      ()=>alert("Link disalin!")
+    );
+    hasil.appendChild(copy);
 
   }catch(error){
     status.textContent="Gagal: "+error.message;
   }finally{
     button.disabled=false;
-    button.textContent="Simpan Video";
-  }
-}
-
-function salinLink(){
-  if(window.linkVideoKu){
-    navigator.clipboard.writeText(window.linkVideoKu);
-    alert("Link penonton disalin!");
   }
 }
 </script>
