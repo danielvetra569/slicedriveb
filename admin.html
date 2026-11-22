@@ -6,151 +6,120 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VideoKu - Admin</title>
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  padding: 20px;
-  background: #f5f6fa;
-  font-family: Arial, sans-serif;
-  color: #202331;
-}
-.container {
-  max-width: 600px;
-  margin: 20px auto;
-  background: white;
-  padding: 22px;
-  border-radius: 12px;
-}
-h2 { color: #635bdb; }
-label {
-  display: block;
-  margin-top: 16px;
-  font-weight: bold;
-}
-input, textarea {
-  width: 100%;
-  padding: 12px;
-  margin-top: 7px;
-  border: 1px solid #ddd;
-  border-radius: 7px;
-  font-size: 15px;
-}
-textarea { min-height: 90px; }
-button {
-  margin-top: 18px;
-  padding: 13px;
-  width: 100%;
-  border: 0;
-  border-radius: 7px;
-  background: #635bdb;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-#hasil {
-  display: none;
-  margin-top: 20px;
-}
-pre {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  background: #f1f1f5;
-  padding: 12px;
-  border-radius: 7px;
-}
-.link {
-  overflow-wrap: anywhere;
-  color: #5146c7;
-}
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#f5f6fa;margin:0;padding:20px;color:#202331}
+.container{max-width:600px;margin:25px auto;background:white;padding:22px;border-radius:12px}
+h2{color:#635bdb}
+input,textarea{width:100%;padding:13px;margin:8px 0 15px;border:1px solid #ccc;border-radius:7px;font-size:15px}
+textarea{min-height:80px}
+button{width:100%;padding:14px;background:#635bdb;color:white;border:0;border-radius:7px;font-size:16px;cursor:pointer}
+#hasil{margin-top:18px;overflow-wrap:anywhere}
+a{color:#635bdb}
+#status{margin-top:15px}
 </style>
 </head>
 <body>
-
 <div class="container">
 <h2>VideoKu Admin</h2>
-<p>Tambahkan video menggunakan URL AceImg.</p>
+
+<label>Password Admin</label>
+<input type="password" id="password" placeholder="Masukkan password admin">
 
 <label>Judul Video</label>
-<input id="judul" placeholder="Masukkan judul video">
+<input id="title" placeholder="Masukkan judul video">
 
 <label>Deskripsi</label>
-<textarea id="deskripsi" placeholder="Deskripsi video"></textarea>
+<textarea id="description" placeholder="Deskripsi video (boleh kosong)"></textarea>
 
 <label>URL Video AceImg</label>
 <input id="url" placeholder="https://cdn.aceimg.com/contoh.mp4">
 
-<button onclick="buatVideo()">Buat Data Video</button>
+<button id="saveButton" onclick="simpanVideo()">Simpan Video</button>
 
-<div id="hasil">
-  <h3>Data Video Berhasil Dibuat</h3>
-  <p>Salin data berikut ke dalam videos.json.</p>
-  <pre id="data"></pre>
-  <button onclick="salinData()">Salin Data Video</button>
-  <p>Link penonton:</p>
-  <p class="link" id="link"></p>
-  <button onclick="salinLink()">Salin Link Penonton</button>
-</div>
+<div id="status"></div>
+<div id="hasil"></div>
 </div>
 
 <script>
-let linkPenonton = "";
+async function simpanVideo(){
+  const password=document.getElementById("password").value.trim();
+  const title=document.getElementById("title").value.trim();
+  const description=document.getElementById("description").value.trim();
+  const url=document.getElementById("url").value.trim();
+  const status=document.getElementById("status");
+  const hasil=document.getElementById("hasil");
+  const button=document.getElementById("saveButton");
 
-function buatVideo() {
-  const title = document.getElementById("judul").value.trim();
-  const description = document.getElementById("deskripsi").value.trim();
-  const url = document.getElementById("url").value.trim();
+  hasil.innerHTML="";
 
-  if (!title || !url) {
-    alert("Isi judul dan URL video terlebih dahulu.");
+  if(!password||!title||!url){
+    status.textContent="Isi password, judul, dan URL video terlebih dahulu.";
     return;
   }
 
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== "https:" ||
-        !parsed.hostname.endsWith("aceimg.com")) {
-      alert("Masukkan URL HTTPS dari AceImg.");
-      return;
+  let parsed;
+  try{
+    parsed=new URL(url);
+  }catch(e){
+    status.textContent="URL video tidak valid.";
+    return;
+  }
+
+  if(parsed.protocol!=="https:"||!parsed.hostname.endsWith("aceimg.com")){
+    status.textContent="Gunakan URL HTTPS dari AceImg.";
+    return;
+  }
+
+  const code=Array.from(crypto.getRandomValues(new Uint8Array(5)))
+    .map(x=>x.toString(16).padStart(2,"0")).join("").toUpperCase();
+
+  button.disabled=true;
+  button.textContent="Menyimpan...";
+  status.textContent="Sedang menyimpan video...";
+
+  try{
+    const response=await fetch(
+      "https://hidden-recipe-88ca.danielvetra569.workers.dev/add-video",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "X-Admin-Password":password
+        },
+        body:JSON.stringify({code,title,description,url})
+      }
+    );
+
+    const result=await response.json();
+
+    if(!response.ok||!result.success){
+      throw new Error(result.error||"Gagal menyimpan video.");
     }
-  } catch {
-    alert("URL video tidak valid.");
-    return;
+
+    const link="https://cdn.aciemg.my.id/e.html?code="+code;
+
+    status.textContent="Video berhasil disimpan!";
+    hasil.innerHTML=
+      "<p><b>Kode:</b> "+code+"</p>"+
+      "<p><b>Link penonton:</b><br><a href='"+link+"' target='_blank'>"+link+"</a></p>"+
+      "<button onclick='salinLink()'>Salin Link Penonton</button>";
+
+    window.linkVideoKu=link;
+
+  }catch(error){
+    status.textContent="Gagal: "+error.message;
+  }finally{
+    button.disabled=false;
+    button.textContent="Simpan Video";
   }
-
-  const code = Array.from(
-    crypto.getRandomValues(new Uint8Array(5)),
-    b => b.toString(16).padStart(2, "0")
-  ).join("").toUpperCase();
-
-  const video = {
-    code,
-    title,
-    description,
-    url
-  };
-
-  document.getElementById("data").textContent =
-    JSON.stringify(video, null, 2);
-
-  linkPenonton =
-    "https://cdn.aciemg.my.id/e.html?code=" +
-    encodeURIComponent(code);
-
-  document.getElementById("link").textContent = linkPenonton;
-  document.getElementById("hasil").style.display = "block";
 }
 
-function salinData() {
-  navigator.clipboard.writeText(
-    document.getElementById("data").textContent
-  ).then(() => alert("Data video disalin."));
-}
-
-function salinLink() {
-  navigator.clipboard.writeText(linkPenonton)
-    .then(() => alert("Link penonton disalin."));
+function salinLink(){
+  if(window.linkVideoKu){
+    navigator.clipboard.writeText(window.linkVideoKu);
+    alert("Link penonton disalin!");
+  }
 }
 </script>
-
 </body>
 </html>
