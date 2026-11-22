@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -6,15 +7,8 @@
 <meta name="theme-color" content="#635bdb">
 <title>VideoKu - Tonton Video</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- POPUNDER -->
-<script data-cfasync="false" src="https://bancadeltempoidea.org/14/0b6c94865d260b69f091b59cb66be542"></script>
-
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -26,7 +20,7 @@ body {
 header {
   background: #635bdb;
   color: white;
-  padding: 18px;
+  padding: 18px 6%;
   font-size: 21px;
   font-weight: bold;
 }
@@ -37,12 +31,16 @@ header {
   padding: 0 14px;
 }
 
-.ad-native {
-  margin-top: 18px;
-  padding: 15px;
-  background: #fff;
-  border: 1px dashed #ccc;
-  border-radius: 8px;
+.ad-banner {
+  min-height: 90px;
+  background: #fff8d9;
+  border: 1px dashed #d6bd52;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b7830;
+  margin-bottom: 18px;
+  text-align: center;
 }
 
 .video-box {
@@ -53,13 +51,20 @@ header {
 
 video {
   width: 100%;
-  display: block;
-  background: #000;
+  background: black;
   border-radius: 8px;
 }
 
-h2 {
-  font-size: 20px;
+h2 { font-size: 20px; }
+
+.ad-smartlink {
+  margin-top: 18px;
+  padding: 20px;
+  background: white;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  text-align: center;
+  color: #888;
 }
 
 #status {
@@ -75,6 +80,8 @@ h2 {
 
 <div class="container">
 
+  <div class="ad-banner">TEMPAT IKLAN BANNER</div>
+
   <div id="status">Memuat video...</div>
 
   <div class="video-box" id="videoBox" hidden>
@@ -83,62 +90,52 @@ h2 {
     <p id="videoDescription"></p>
   </div>
 
-  <!-- NATIVE BANNER -->
-  <div class="ad-native">
-    <script async="async" data-cfasync="false" src="https://bancadeltempoidea.org/21/580538d6da5e19898741a77320afdabd"></script>
-    <div id="container-580538d6da5e19898741a77320afdabd"></div>
+  <div class="ad-smartlink">
+    TEMPAT IKLAN SMARTLINK
   </div>
 
 </div>
 
 <script>
-const SUPABASE_URL = "https://kbesxoueqynthvqtayww.supabase.co";
-const SUPABASE_KEY = "sb_publishable_IBnGOZUeFE6NMg62eZTxbA_6UNASmOv";
-
-const db = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
 async function tampilkanVideo() {
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
-
+  const code = new URLSearchParams(location.search).get("code");
   const status = document.getElementById("status");
 
   if (!code) {
-    status.textContent = "Link video tidak valid.";
+    status.textContent = "Kode video tidak ditemukan.";
     return;
   }
 
-  const { data, error } = await db
-    .from("videos")
-    .select("title, description, storage_path")
-    .eq("share_code", code)
-    .maybeSingle();
+  try {
+    const response = await fetch("./videos.json");
 
-  if (error) {
-    status.textContent = "Gagal mengambil video.";
+    if (!response.ok) {
+      throw new Error("Daftar video tidak bisa dimuat.");
+    }
+
+    const daftar = await response.json();
+    const video = daftar.videos.find(item => item.code === code);
+
+    if (!video) {
+      status.textContent = "Video tidak ditemukan.";
+      return;
+    }
+
+    const player = document.getElementById("player");
+    player.src = video.url;
+    player.load();
+
+    document.getElementById("videoTitle").textContent = video.title || "";
+    document.getElementById("videoDescription").textContent =
+      video.description || "";
+
+    document.getElementById("videoBox").hidden = false;
+    status.hidden = true;
+
+  } catch (error) {
+    status.textContent = "Gagal memuat video. Silakan coba lagi.";
     console.error(error);
-    return;
   }
-
-  if (!data) {
-    status.textContent = "Video tidak ditemukan.";
-    return;
-  }
-
-  const { data: fileData } = db.storage
-    .from("videos")
-    .getPublicUrl(data.storage_path);
-
-  document.getElementById("player").src = fileData.publicUrl;
-  document.getElementById("videoTitle").textContent = data.title || "";
-  document.getElementById("videoDescription").textContent =
-    data.description || "";
-
-  document.getElementById("videoBox").hidden = false;
-  status.hidden = true;
 }
 
 tampilkanVideo();
