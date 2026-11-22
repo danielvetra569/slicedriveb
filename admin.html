@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VideoKu - Admin</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 20px;
+  background: #f5f6fa;
+  font-family: Arial, sans-serif;
+  color: #202331;
+}
+.container {
+  max-width: 600px;
+  margin: 20px auto;
+  background: white;
+  padding: 22px;
+  border-radius: 12px;
+}
+h2 { color: #635bdb; }
+label {
+  display: block;
+  margin-top: 16px;
+  font-weight: bold;
+}
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 7px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  font-size: 15px;
+}
+textarea { min-height: 90px; }
+button {
+  margin-top: 18px;
+  padding: 13px;
+  width: 100%;
+  border: 0;
+  border-radius: 7px;
+  background: #635bdb;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+#hasil {
+  display: none;
+  margin-top: 20px;
+}
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #f1f1f5;
+  padding: 12px;
+  border-radius: 7px;
+}
+.link {
+  overflow-wrap: anywhere;
+  color: #5146c7;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>VideoKu Admin</h2>
+<p>Tambahkan video menggunakan URL AceImg.</p>
+
+<label>Judul Video</label>
+<input id="judul" placeholder="Masukkan judul video">
+
+<label>Deskripsi</label>
+<textarea id="deskripsi" placeholder="Deskripsi video"></textarea>
+
+<label>URL Video AceImg</label>
+<input id="url" placeholder="https://cdn.aceimg.com/contoh.mp4">
+
+<button onclick="buatVideo()">Buat Data Video</button>
+
+<div id="hasil">
+  <h3>Data Video Berhasil Dibuat</h3>
+  <p>Salin data berikut ke dalam videos.json.</p>
+  <pre id="data"></pre>
+  <button onclick="salinData()">Salin Data Video</button>
+  <p>Link penonton:</p>
+  <p class="link" id="link"></p>
+  <button onclick="salinLink()">Salin Link Penonton</button>
+</div>
+</div>
+
+<script>
+let linkPenonton = "";
+
+function buatVideo() {
+  const title = document.getElementById("judul").value.trim();
+  const description = document.getElementById("deskripsi").value.trim();
+  const url = document.getElementById("url").value.trim();
+
+  if (!title || !url) {
+    alert("Isi judul dan URL video terlebih dahulu.");
+    return;
+  }
+
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:" ||
+        !parsed.hostname.endsWith("aceimg.com")) {
+      alert("Masukkan URL HTTPS dari AceImg.");
+      return;
+    }
+  } catch {
+    alert("URL video tidak valid.");
+    return;
+  }
+
+  const code = Array.from(
+    crypto.getRandomValues(new Uint8Array(5)),
+    b => b.toString(16).padStart(2, "0")
+  ).join("").toUpperCase();
+
+  const video = {
+    code,
+    title,
+    description,
+    url
+  };
+
+  document.getElementById("data").textContent =
+    JSON.stringify(video, null, 2);
+
+  linkPenonton =
+    "https://cdn.aciemg.my.id/e.html?code=" +
+    encodeURIComponent(code);
+
+  document.getElementById("link").textContent = linkPenonton;
+  document.getElementById("hasil").style.display = "block";
+}
+
+function salinData() {
+  navigator.clipboard.writeText(
+    document.getElementById("data").textContent
+  ).then(() => alert("Data video disalin."));
+}
+
+function salinLink() {
+  navigator.clipboard.writeText(linkPenonton)
+    .then(() => alert("Link penonton disalin."));
+}
+</script>
+
+</body>
+</html>
