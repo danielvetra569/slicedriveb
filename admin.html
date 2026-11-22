@@ -45,7 +45,8 @@ async function simpanVideo(){
   const password=document.getElementById("password").value.trim();
   const title=document.getElementById("title").value.trim();
   const description=document.getElementById("description").value.trim();
-  const url=document.getElementById("url").value.trim();
+  let url=document.getElementById("url").value.trim();
+
   const status=document.getElementById("status");
   const hasil=document.getElementById("hasil");
   const button=document.getElementById("saveButton");
@@ -63,9 +64,15 @@ async function simpanVideo(){
     return;
   }
 
-  if(parsed.protocol!=="https:"||!parsed.hostname.endsWith("aceimg.com")){
+  if(parsed.protocol!=="https:"||
+     !["aceimg.com","www.aceimg.com","cdn.aceimg.com"].includes(parsed.hostname)){
     status.textContent="Gunakan URL HTTPS dari AceImg.";
     return;
+  }
+
+  if(parsed.hostname==="aceimg.com"||parsed.hostname==="www.aceimg.com"){
+    parsed.hostname="cdn.aceimg.com";
+    url=parsed.toString();
   }
 
   const code=Array.from(crypto.getRandomValues(new Uint8Array(5)))
@@ -93,8 +100,12 @@ async function simpanVideo(){
     }
 
     const link="https://cdn.aciemg.my.id/e.html?code="+code;
+
     status.textContent="Video berhasil disimpan!";
-    hasil.innerHTML="<p><b>Kode:</b> "+code+"</p><p><b>Link penonton:</b><br><a href='"+link+"' target='_blank'>"+link+"</a></p>";
+    hasil.innerHTML=
+      "<p><b>Kode:</b> "+code+"</p>"+
+      "<p><b>URL CDN:</b><br>"+url+"</p>"+
+      "<p><b>Link penonton:</b><br><a href='"+link+"' target='_blank'>"+link+"</a></p>";
 
     const copy=document.createElement("button");
     copy.textContent="Salin Link Penonton";
