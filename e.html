@@ -51,17 +51,6 @@ video {
   border-radius: 8px;
 }
 
-.fullscreen-btn {
-  margin-top: 10px;
-  padding: 11px 18px;
-  background: #635bdb;
-  color: white;
-  border: 0;
-  border-radius: 7px;
-  font-size: 15px;
-  cursor: pointer;
-}
-
 h2 { font-size: 20px; }
 
 #status {
@@ -81,11 +70,6 @@ h2 { font-size: 20px; }
 
   <div class="video-box" id="videoBox" hidden>
     <video id="player" controls playsinline autoplay muted></video>
-
-    <button class="fullscreen-btn" onclick="buatFullscreen()">
-      ⛶ Fullscreen
-    </button>
-
     <h2 id="videoTitle"></h2>
     <p id="videoDescription"></p>
   </div>
@@ -111,19 +95,6 @@ function ambilKodeVideo() {
   }
 
   return decodeURIComponent(last).trim();
-}
-
-// FULLSCREEN MANUAL
-function buatFullscreen() {
-  const player = document.getElementById("player");
-
-  if (player.requestFullscreen) {
-    player.requestFullscreen();
-  } else if (player.webkitEnterFullscreen) {
-    player.webkitEnterFullscreen();
-  } else {
-    alert("Fullscreen tidak didukung browser ini.");
-  }
 }
 
 async function tampilkanVideo() {
