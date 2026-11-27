@@ -34,7 +34,7 @@ a{color:#635bdb}
 <label>Deskripsi</label>
 <textarea id="description" placeholder="Deskripsi video (boleh kosong)"></textarea>
 
-<label>URL Video AceImg</label>
+<label>URL Video</label>
 <input id="url" placeholder="https://aceimg.com/contoh.mp4">
 
 <button id="saveButton" onclick="simpanVideo()">Simpan Video</button>
@@ -61,14 +61,23 @@ async function simpanVideo(){
   }
 
   let parsed;
-  try{parsed=new URL(url)}catch(e){
+  try{
+    parsed=new URL(url);
+  }catch(e){
     status.textContent="URL tidak valid.";
     return;
   }
 
+  const domainDiizinkan=[
+    "aceimg.com",
+    "www.aceimg.com",
+    "cdn.aceimg.com",
+    "cdn2.aceimp.com"
+  ];
+
   if(parsed.protocol!=="https:"||
-     !["aceimg.com","www.aceimg.com","cdn.aceimg.com"].includes(parsed.hostname)){
-    status.textContent="Gunakan URL HTTPS dari AceImg.";
+     !domainDiizinkan.includes(parsed.hostname)){
+    status.textContent="Gunakan URL HTTPS dari AceImg atau CDN yang diizinkan.";
     return;
   }
 
@@ -107,7 +116,7 @@ async function simpanVideo(){
     status.textContent="Video berhasil disimpan!";
     hasil.innerHTML=
       "<p><b>Kode:</b> "+code+"</p>"+
-      "<p><b>URL CDN:</b><br>"+url+"</p>"+
+      "<p><b>URL Video:</b><br>"+url+"</p>"+
       "<p><b>Link penonton:</b><br><a href='"+link+"' target='_blank'>"+link+"</a></p>";
 
     const copy=document.createElement("button");
