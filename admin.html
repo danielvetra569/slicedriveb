@@ -101,8 +101,8 @@ async function simpanVideo(){
         (result.detail?" — "+result.detail:""));
     }
 
-    // FORMAT LINK PENONTON BARU
-    const link="https://cdn.aciemg.my.id/e."+code+".mp4";
+    // FORMAT LINK PENONTON LAMA
+    const link="https://cdn.aciemg.my.id/e.html?code="+code;
 
     status.textContent="Video berhasil disimpan!";
     hasil.innerHTML=
@@ -127,3 +127,4 @@ async function simpanVideo(){
 
 </body>
 </html>
+```
