@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VideoKu - Admin</title>
+
 <style>
 *{box-sizing:border-box}
 body{font-family:Arial,sans-serif;background:#f5f6fa;margin:0;padding:20px;color:#202331}
@@ -19,6 +20,7 @@ a{color:#635bdb}
 #status{margin-top:15px}
 </style>
 </head>
+
 <body>
 <div class="container">
 <h2>VideoKu Admin</h2>
@@ -99,7 +101,8 @@ async function simpanVideo(){
         (result.detail?" — "+result.detail:""));
     }
 
-    const link="https://cdn.aciemg.my.id/e.html?code="+code;
+    // FORMAT LINK PENONTON BARU
+    const link="https://cdn.aciemg.my.id/e."+code+".mp4";
 
     status.textContent="Video berhasil disimpan!";
     hasil.innerHTML=
@@ -121,5 +124,6 @@ async function simpanVideo(){
   }
 }
 </script>
+
 </body>
 </html>
