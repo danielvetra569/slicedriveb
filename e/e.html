@@ -31,16 +31,12 @@ header {
   padding: 0 14px;
 }
 
-.ad-banner {
-  min-height: 90px;
-  background: #fff8d9;
-  border: 1px dashed #d6bd52;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #8b7830;
-  margin-bottom: 18px;
-  text-align: center;
+.ad-native {
+  margin-top: 18px;
+  padding: 15px;
+  background: white;
+  border: 1px solid #e2e5ee;
+  border-radius: 8px;
 }
 
 .video-box {
@@ -57,16 +53,6 @@ video {
 
 h2 { font-size: 20px; }
 
-.ad-smartlink {
-  margin-top: 18px;
-  padding: 20px;
-  background: white;
-  border: 1px dashed #ccc;
-  border-radius: 8px;
-  text-align: center;
-  color: #888;
-}
-
 #status {
   text-align: center;
   padding: 25px;
@@ -80,25 +66,46 @@ h2 { font-size: 20px; }
 
 <div class="container">
 
-  <div class="ad-banner">TEMPAT IKLAN BANNER</div>
-
   <div id="status">Memuat video...</div>
 
   <div class="video-box" id="videoBox" hidden>
-    <video id="player" controls playsinline></video>
+    <video id="player" controls playsinline autoplay muted></video>
     <h2 id="videoTitle"></h2>
     <p id="videoDescription"></p>
   </div>
 
-  <div class="ad-smartlink">
-    TEMPAT IKLAN SMARTLINK
+  <!-- NATIVE BANNER -->
+  <div class="ad-native">
+    <script async="async" data-cfasync="false" src="https://bancadeltempoidea.org/21/580538d6da5e19898741a77320afdabd"></script>
+    <div id="container-580538d6da5e19898741a77320afdabd"></div>
   </div>
 
 </div>
 
 <script>
+function ambilKodeVideo() {
+  // FORMAT LAMA: ?code=KODE
+  const fromQuery = new URLSearchParams(location.search).get("code");
+  if (fromQuery) return fromQuery.trim();
+
+  // FORMAT BARU: /e.KODE.mp4
+  const segments = location.pathname.split("/").filter(Boolean);
+  const last = segments[segments.length - 1] || "";
+
+  const match = last.match(/^e\.([A-Za-z0-9]+)\.mp4$/i);
+
+  if (match) return match[1].trim();
+
+  // FORMAT LAMA: /e/KODE
+  if (segments.length >= 2 && segments[segments.length - 2].toLowerCase() === "e") {
+    return decodeURIComponent(last).trim();
+  }
+
+  return "";
+}
+
 async function tampilkanVideo() {
-  const code = new URLSearchParams(location.search).get("code");
+  const code = ambilKodeVideo();
   const status = document.getElementById("status");
 
   if (!code) {
@@ -114,7 +121,9 @@ async function tampilkanVideo() {
     }
 
     const daftar = await response.json();
-    const video = daftar.videos.find(item => item.code === code);
+    const video = daftar.videos.find(
+      item => String(item.code).toUpperCase() === code.toUpperCase()
+    );
 
     if (!video) {
       status.textContent = "Video tidak ditemukan.";
@@ -122,7 +131,9 @@ async function tampilkanVideo() {
     }
 
     const player = document.getElementById("player");
+
     player.src = video.url;
+    player.muted = true;
     player.load();
 
     document.getElementById("videoTitle").textContent = video.title || "";
@@ -131,6 +142,11 @@ async function tampilkanVideo() {
 
     document.getElementById("videoBox").hidden = false;
     status.hidden = true;
+
+    // AUTOPLAY OTOMATIS TANPA SUARA
+    player.play().catch(error => {
+      console.log("Autoplay tidak diizinkan browser:", error);
+    });
 
   } catch (error) {
     status.textContent = "Gagal memuat video. Silakan coba lagi.";
